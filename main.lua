@@ -42,7 +42,7 @@ function main:Begin(PROPS)
     end
 
     local function GetFont() 
-        return Font.fromId(12187374954)                                                     
+        return Font.fromId(12187371840)                                                     
     end
 
     local ImGui = Instance.new("ScreenGui")
