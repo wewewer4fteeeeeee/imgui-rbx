@@ -67,6 +67,22 @@ local function GetFont()
     return Font.fromId(12187371840)
 end
 
+
+local function imagesuportyippie(url)
+    if not url or url == "" then return nil end
+    if not string.find(url, "http") then return url end
+    local filename = "cache_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-","") .. ".png"
+    local success, _ = pcall(function()
+        writefile(filename, game:HttpGet(url))
+    end)
+    if success then
+        return getcustomasset(filename)
+    end
+    return nil
+end
+
+    
+
     local ImGui = Instance.new("ScreenGui")
     local Window = Instance.new("Frame")
     local WindowCorner = Instance.new("UICorner")
@@ -691,7 +707,35 @@ end
             pcall(CheckBoxOptions.OnChanged, Enabled)
         end)
     end
+
+
+
+
+function ElementHandler:imgyoo(config)
+    local hayimg = config.hayimg or ""
+    local asset = imagesuportyippie(hayimg)
     
+    local img_element = Instance.new("Frame")
+    local img_display = Instance.new("ImageLabel")
+    
+    img_element.Name = "imgyoo_element"
+    img_element.Parent = WindowElements
+    img_element.BackgroundTransparency = 1
+    img_element.Size = UDim2.new(1, 0, 0, 100) 
+    
+    img_display.Name = "hayyyitsourimg"
+    img_display.Parent = img_element
+    img_display.AnchorPoint = Vector2.new(0.5, 0.5)
+    img_display.Position = UDim2.new(0.5, 0, 0.5, 0)
+    img_display.Size = UDim2.new(0, 80, 0, 80) 
+    img_display.Image = asset or ""
+    img_display.BackgroundTransparency = 1
+    
+    return img_element
+end
+
+
+            
     function ElementHandler:Seperator() 
         local Seperator_Element = Instance.new("Frame")
         
