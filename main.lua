@@ -725,8 +725,8 @@ function ElementHandler:imgyoo(config)
     
     img_display.Name = "hayyyitsourimg"
     img_display.Parent = img_element
-    img_display.AnchorPoint = Vector2.new(0.5, 0.5)
-    img_display.Position = UDim2.new(0.5, 0, 0.5, 0)
+    img_display.AnchorPoint = Vector2.new(0, 0.5)
+    img_display.Position = UDim2.new(0, 5, 0.5, 0)
     img_display.Size = UDim2.new(0, 80, 0, 80) 
     img_display.Image = asset or ""
     img_display.BackgroundTransparency = 1
