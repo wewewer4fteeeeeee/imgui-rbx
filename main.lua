@@ -1077,60 +1077,73 @@ end
     end
 
             
-function ElementHandler:SinWaveGraph(SinWaveGraphArgs) 
-    local SinWaveGraph_Element = Instance.new("Frame")
-    local SinWaveGraph_ElementDisplay = Instance.new("Frame")
+function ElementHandler:PatternBackground(Args) 
+    local Container = Instance.new("Frame")
+    local Display = Instance.new("Frame")
 
-    local Value = SinWaveGraphArgs.Value or 0
-    local MaxHeight = SinWaveGraphArgs.MaxHeight or 50
-    local Frequency = SinWaveGraphArgs.Frequency or 2
+    local Value = 0
+    local Pattern = Args.Pattern or "ZigZag"
+    local Speed = Args.Speed or 0.1
+    local Thickness = Args.Thickness or 2
+    local Color = Args.Color or Color3.new(1, 1, 1)
 
-    -- Parented to Window (the main UI) instead of the list layout
-    SinWaveGraph_Element.Name = "BackgroundWave"
-    SinWaveGraph_Element.Parent = Window 
-    SinWaveGraph_Element.BackgroundTransparency = 1.000
-    -- Fills the whole window area
-    SinWaveGraph_Element.Position = UDim2.new(0, 0, 0, 0)
-    SinWaveGraph_Element.Size = UDim2.new(1, 0, 1, 0)
-    SinWaveGraph_Element.ZIndex = 0 
+    Container.Name = "PatternBG"
+    Container.Parent = Window 
+    Container.BackgroundTransparency = 1.000
+    Container.Position = UDim2.new(0, 0, 0, 0)
+    Container.Size = UDim2.new(1, 0, 1, 0)
+    Container.ZIndex = -1 
 
-    SinWaveGraph_ElementDisplay.Name = "WaveDisplay"
-    SinWaveGraph_ElementDisplay.Parent = SinWaveGraph_Element
-    SinWaveGraph_ElementDisplay.BackgroundColor3 = Color3.fromRGB(26, 15, 46) 
-    SinWaveGraph_ElementDisplay.BackgroundTransparency = 0.763
-    SinWaveGraph_ElementDisplay.BorderSizePixel = 0
-    SinWaveGraph_ElementDisplay.Size = UDim2.new(1, 0, 1, 0)
-    SinWaveGraph_ElementDisplay.ClipsDescendants = true
+    Display.Name = "PatternDisplay"
+    Display.Parent = Container
+    Display.BackgroundColor3 = Color3.fromRGB(26, 15, 46) 
+    Display.BackgroundTransparency = 0.763
+    Display.BorderSizePixel = 0
+    Display.Size = UDim2.new(1, 0, 1, 0)
+    Display.ClipsDescendants = true
 
     local trail = Instance.new("Folder")
-    trail.Parent = SinWaveGraph_ElementDisplay
+    trail.Parent = Display
     
     local points = {}
-    for i = 1, 60 do
+    for i = 1, 80 do
         local point = Instance.new("Frame")
-        point.Size = UDim2.new(0, 2, 0, 2)
-        point.BackgroundColor3 = Color3.new(1, 1, 1)
+        point.Size = UDim2.new(0, Thickness, 0, Thickness)
+        point.BackgroundColor3 = Color 
         point.BorderSizePixel = 0
-        point.ZIndex = 1
+        point.ZIndex = 0 
         point.Parent = trail
         points[i] = point
     end
 
-    local function updateTrail(val)
-        local displayWidth = SinWaveGraph_ElementDisplay.AbsoluteSize.X
-        local displayHeight = SinWaveGraph_ElementDisplay.AbsoluteSize.Y
-        for i, point in ipairs(points) do
-            local relativeX = i / #points
-            local sinCalc = math.sin((relativeX * math.pi * 2 * Frequency) + val)
-            local yOffset = (sinCalc * (MaxHeight / 2)) + (displayHeight / 2)
-            point.Position = UDim2.new(relativeX, 0, 0, yOffset)
+    local function getPatternValue(x, t)
+        if Pattern == "ZigZag" then
+            return math.abs((x * 4 + t) % 2 - 1) * 2 - 1
+        elseif Pattern == "Square" then
+            return math.sin(x * 10 + t) > 0 and 1 or -1
+        elseif Pattern == "Noise" then
+            return math.sin(x * 15 + t) * math.cos(x * 5 + t * 0.5)
+        elseif Pattern == "Sawtooth" then
+            return (x * 5 + t) % 1 * 2 - 1
+        else
+            return math.sin(x * 6.28 + t)
+        end
+    end
+
+    local function update(val)
+        local h = Display.AbsoluteSize.Y
+        for i, p in ipairs(points) do
+            local rx = i / #points
+            local calc = getPatternValue(rx, val)
+            local y = (calc * (h / 3)) + (h / 2)
+            p.Position = UDim2.new(rx, 0, 0, y)
         end
     end
 
     task.spawn(function()
         while true do
-            Value = Value + 0.1
-            updateTrail(Value)
+            Value = Value + Speed
+            update(Value)
             task.wait(0.03)
         end
     end)
