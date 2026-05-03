@@ -1076,82 +1076,77 @@ end
         
     end
 
-    function ElementHandler:SinWaveGraph(SinWaveGraphArgs) 
-        local SinWaveGraph_Element = Instance.new("Frame")
-        local SinWaveGraph_ElementLayout = Instance.new("UIListLayout")
-        local SinWaveGraph_ElementDisplay = Instance.new("Frame")
-        local SinWaveGraph_ElementDisplayName = Instance.new("TextLabel")
+            
+function ElementHandler:SinWaveGraph(SinWaveGraphArgs) 
+    local SinWaveGraph_Element = Instance.new("Frame")
+    local SinWaveGraph_ElementLayout = Instance.new("UIListLayout")
+    local SinWaveGraph_ElementDisplay = Instance.new("Frame")
+    local SinWaveGraph_ElementDisplayName = Instance.new("TextLabel")
 
-        local Value = SinWaveGraphArgs.Value
-        local MaxHeight = SinWaveGraphArgs.MaxHeight
-        local Frequency = SinWaveGraphArgs.Frequency
+    local Value = SinWaveGraphArgs.Value or 0
+    local MaxHeight = SinWaveGraphArgs.MaxHeight or 50
+    local Frequency = SinWaveGraphArgs.Frequency or 2
 
-        SinWaveGraph_Element.Name = "SinWaveGraph_Element"
-        SinWaveGraph_Element.Parent = WindowElements
-        SinWaveGraph_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        SinWaveGraph_Element.BackgroundTransparency = 1.000
-        SinWaveGraph_Element.Position = UDim2.new(0, 0, 0.689999998, 0)
-        SinWaveGraph_Element.Size = UDim2.new(1, 0, 0.226666749, 23)
+    SinWaveGraph_Element.Name = "SinWaveGraph_Element"
+    SinWaveGraph_Element.Parent = WindowElements
+    SinWaveGraph_Element.BackgroundTransparency = 1.000
+    SinWaveGraph_Element.Size = UDim2.new(1, 0, 0, 85)
 
-        SinWaveGraph_ElementLayout.Name = "SinWaveGraph_ElementLayout"
-        SinWaveGraph_ElementLayout.Parent = SinWaveGraph_Element
-        SinWaveGraph_ElementLayout.SortOrder = Enum.SortOrder.Name
-        SinWaveGraph_ElementLayout.Padding = UDim.new(0, 10)
+    SinWaveGraph_ElementDisplay.Name = "SinWaveGraph_ElementDisplay"
+    SinWaveGraph_ElementDisplay.Parent = SinWaveGraph_Element
+    SinWaveGraph_ElementDisplay.BackgroundColor3 = Color3.fromRGB(26, 15, 46) 
+    SinWaveGraph_ElementDisplay.BackgroundTransparency = 0.763
+    SinWaveGraph_ElementDisplay.BorderColor3 = Color3.fromRGB(138, 43, 226)
+    SinWaveGraph_ElementDisplay.BorderSizePixel = 1
+    SinWaveGraph_ElementDisplay.Size = UDim2.new(0.6, 0, 0, 60)
+    SinWaveGraph_ElementDisplay.ClipsDescendants = true
 
-        SinWaveGraph_ElementDisplay.Name = "SinWaveGraph_ElementDisplay"
-        SinWaveGraph_ElementDisplay.Parent = SinWaveGraph_Element
-        SinWaveGraph_ElementDisplay.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        SinWaveGraph_ElementDisplay.BorderColor3 = Color3.fromRGB(74, 74, 83)
-        SinWaveGraph_ElementDisplay.Position = UDim2.new(0, 0, 0.423953384, 0)
-        SinWaveGraph_ElementDisplay.Size = UDim2.new(0.370000005, 0, 0, 60)
-        SinWaveGraph_ElementDisplay.ClipsDescendants = true
+    SinWaveGraph_ElementDisplayName.Name = "ASinWaveGraph_ElementName"
+    SinWaveGraph_ElementDisplayName.Parent = SinWaveGraph_Element
+    SinWaveGraph_ElementDisplayName.BackgroundTransparency = 1.000
+    SinWaveGraph_ElementDisplayName.Position = UDim2.new(0.65, 0, 0, 20)
+    SinWaveGraph_ElementDisplayName.Size = UDim2.new(0.3, 0, 0, 20)
+    SinWaveGraph_ElementDisplayName.FontFace = GetFont()
+    SinWaveGraph_ElementDisplayName.Text = SinWaveGraphArgs.Name
+    SinWaveGraph_ElementDisplayName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SinWaveGraph_ElementDisplayName.TextSize = 15.000
+    SinWaveGraph_ElementDisplayName.TextXAlignment = Enum.TextXAlignment.Left
 
-        SinWaveGraph_ElementDisplayName.Name = "ASinWaveGraph_ElementName"
-        SinWaveGraph_ElementDisplayName.Parent = SinWaveGraph_Element
-        SinWaveGraph_ElementDisplayName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        SinWaveGraph_ElementDisplayName.BackgroundTransparency = 1.000
-        SinWaveGraph_ElementDisplayName.Position = UDim2.new(0, (SinWaveGraph_ElementDisplay.AbsoluteSize.X + 15), 0, 20)
-        SinWaveGraph_ElementDisplayName.Size = UDim2.new(1, 0, 0, 20)
-        SinWaveGraph_ElementDisplayName.FontFace = GetFont()
-        SinWaveGraph_ElementDisplayName.Text = SinWaveGraphArgs.Name
-        SinWaveGraph_ElementDisplayName.TextColor3 = Color3.fromRGB(255, 255, 255)
-        SinWaveGraph_ElementDisplayName.TextSize = 17.000
-        SinWaveGraph_ElementDisplayName.TextXAlignment = Enum.TextXAlignment.Left
-
-        SinWaveGraph_ElementDisplay:GetPropertyChangedSignal("Size"):Connect(function()
-            SinWaveGraph_ElementDisplayName.Position = UDim2.new(0, (SinWaveGraph_ElementDisplay.Size.X + 15), 0, 20)
-        end)
-
-        local trail = Instance.new("Folder")
-        trail.Name = "PlotGraph"
-        trail.Parent = SinWaveGraph_ElementDisplay
-        for i = 1, 200 do
-            local point = Instance.new("Frame")
-            point.Size = UDim2.new(0, 1, 0, 1)
-            point.Position = UDim2.new((i-1)/200, 0, 0.5, 0)
-            point.BackgroundColor3 = Color3.new(1, 1, 1)
-            point.BorderSizePixel = 0
-            point.Parent = trail
-        end
-
-        local function updateTrail(value, maxHeight, frequency)
-            for i, point in ipairs(trail:GetChildren()) do
-                local y = math.sin(i/200*math.pi*2*frequency + value)*20 + 25
-                y = math.clamp(y, 0, maxHeight)
-
-                point.Position = UDim2.new((i-1)/200, 0, y/50, 0)
-            end
-            return value
-        end
-
-        while true do
-            Value = updateTrail(Value + 0.06, MaxHeight, Frequency)
-            pcall(SinWaveGraphArgs.OnChanged, Value)
-            task.wait()
-        end
-
-
+    local trail = Instance.new("Folder")
+    trail.Name = "PlotGraph"
+    trail.Parent = SinWaveGraph_ElementDisplay
+    
+    local points = {}
+    for i = 1, 80 do
+        local point = Instance.new("Frame")
+        point.Size = UDim2.new(0, 2, 0, 2)
+        point.BackgroundColor3 = Color3.new(1, 1, 1)
+        point.BorderSizePixel = 0
+        point.Parent = trail
+        points[i] = point
     end
+
+    local function updateTrail(val)
+        local displayHeight = SinWaveGraph_ElementDisplay.AbsoluteSize.Y
+        for i, point in ipairs(points) do
+            local relativeX = i / #points
+            local sinCalc = math.sin((relativeX * math.pi * 2 * Frequency) + val)
+            local yOffset = (sinCalc * (MaxHeight / 2)) + (displayHeight / 2)
+            point.Position = UDim2.new(relativeX, -2, 0, yOffset)
+        end
+    end
+
+    task.spawn(function()
+        while true do
+            Value = Value + 0.1
+            updateTrail(Value)
+            if SinWaveGraphArgs.OnChanged then
+                pcall(SinWaveGraphArgs.OnChanged, Value)
+            end
+            task.wait(0.03)
+        end
+    end)
+end
 
     function ElementHandler:BeginMenuBar() 
         local MenuBar = Instance.new("Frame")
