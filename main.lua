@@ -41,9 +41,31 @@ function main:Begin(PROPS)
         end
     end
 
-    local function GetFont() 
-        return Font.fromId(12187371840)                                                     
+local function GetFont() 
+    local urlllllegoo = PROPS.Font
+    
+    if urlllllegoo and urlllllegoo:find("http") then
+        local uhhsumimportantstuff = "font_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".ttf"
+        local haythisisajson = uhhsumimportantstuff .. ".font"
+        
+        local hayyyitworkedlegoo, data = pcall(function() return game:HttpGet(urlllllegoo) end)
+        if hayyyitworkedlegoo and data then
+            writefile(uhhsumimportantstuff, data)
+            local hayitsourfont = getcustomasset(uhhsumimportantstuff)
+            
+            local hayyyitsourfontasajson = {
+                name = "hayyyitsourfont",
+                faces = {{
+                    name = "hayyyitsourfont", weight = 400, style = "normal", assetId = hayitsourfont
+                }}
+            }
+            writefile(haythisisajson, game:GetService("HttpService"):JSONEncode(hayyyitsourfontasajson))
+            return Font.new(getcustomasset(haythisisajson))
+        end
     end
+
+    return Font.fromId(12187371840)
+end
 
     local ImGui = Instance.new("ScreenGui")
     local Window = Instance.new("Frame")
