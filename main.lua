@@ -1086,6 +1086,8 @@ function ElementHandler:PatternBackground(Args)
     local Speed = Args.Speed or 0.1
     local Thickness = Args.Thickness or 2
     local Color = Args.Color or Color3.new(1, 1, 1)
+    local Frequency = Args.Frequency or 2
+    local MaxHeight = Args.MaxHeight or 50
 
     Container.Name = "PatternBG"
     Container.Parent = Window 
@@ -1106,7 +1108,7 @@ function ElementHandler:PatternBackground(Args)
     trail.Parent = Display
     
     local points = {}
-    for i = 1, 80 do
+    for i = 1, 100 do
         local point = Instance.new("Frame")
         point.Size = UDim2.new(0, Thickness, 0, Thickness)
         point.BackgroundColor3 = Color 
@@ -1117,16 +1119,17 @@ function ElementHandler:PatternBackground(Args)
     end
 
     local function getPatternValue(x, t)
+        local pos = (x * Frequency) + t
         if Pattern == "ZigZag" then
-            return math.abs((x * 4 + t) % 2 - 1) * 2 - 1
+            return math.abs(pos % 2 - 1) * 2 - 1
         elseif Pattern == "Square" then
-            return math.sin(x * 10 + t) > 0 and 1 or -1
-        elseif Pattern == "Noise" then
-            return math.sin(x * 15 + t) * math.cos(x * 5 + t * 0.5)
+            return math.sin(pos * math.pi) > 0 and 1 or -1
         elseif Pattern == "Sawtooth" then
-            return (x * 5 + t) % 1 * 2 - 1
+            return (pos % 1) * 2 - 1
+        elseif Pattern == "Chaos" then
+            return math.sin(pos) * math.cos(pos * 0.5) * math.sin(pos * 2)
         else
-            return math.sin(x * 6.28 + t)
+            return math.sin(pos * math.pi)
         end
     end
 
@@ -1135,7 +1138,7 @@ function ElementHandler:PatternBackground(Args)
         for i, p in ipairs(points) do
             local rx = i / #points
             local calc = getPatternValue(rx, val)
-            local y = (calc * (h / 3)) + (h / 2)
+            local y = (calc * (MaxHeight / 2)) + (h / 2)
             p.Position = UDim2.new(rx, 0, 0, y)
         end
     end
