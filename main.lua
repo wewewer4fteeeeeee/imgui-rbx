@@ -1003,24 +1003,7 @@ end
 
 
 
-function Window:Button(config)
-    local name = config.Name or "Button"
-    local callback = config.Callback or function() end
-    
-    local btn_element = Instance.new("TextButton")
-    btn_element.Name = "button_element"
-    btn_element.Parent = WindowElements
-    btn_element.Size = UDim2.new(1, -10, 0, 30)
-    btn_element.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    btn_element.Text = name
-    btn_element.TextColor3 = Color3.new(1, 1, 1)
-    btn_element.Font = Enum.Font.Code
-    btn_element.TextSize = 14
 
-    btn_element.MouseButton1Click:Connect(callback)
-    
-    return btn_element
-end
 
             
     function ElementHandler:imgyoo(config)
