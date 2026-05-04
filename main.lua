@@ -14,6 +14,38 @@ function util:egg(stringx)
 end
 
 local main = {}
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local nodes = {}
+local lineCache = {}
+local nodeCount = 30
+local connectionDistance = 0.15
+local activeLines = 0
+
+local lineFolder = Instance.new("Folder")
+lineFolder.Name = "LineFolder"
+lineFolder.Parent = BackgroundContainer
+
+local function getLine()
+    activeLines = activeLines + 1
+    if lineCache[activeLines] then
+        local line = lineCache[activeLines]
+        line.Visible = true
+        return line
+    end
+
+    local line = Instance.new("Frame")
+    line.Name = "ConnectionLine"
+    line.BorderSizePixel = 0
+    line.AnchorPoint = Vector2.new(0.5, 0.5)
+    line.ZIndex = -9
+    line.Parent = lineFolder
+    
+    table.insert(lineCache, line)
+    return line
+end
+
 
 function main:Begin(PROPS) 
     if not PROPS then 
@@ -267,47 +299,32 @@ GradientBG.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 GradientBG.BorderSizePixel = 0
 GradientBG.ZIndex = -11
 
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-
-local nodes = {}
-local nodeCount = 40
-local connectionDistance = 0.15 
-
 for i = 1, nodeCount do
-    local node = Instance.new("Frame")
-    node.Size = UDim2.new(0, 3, 0, 3)
-    node.BackgroundColor3 = Color3.new(1, 1, 1)
-    node.BorderSizePixel = 0
-    node.Parent = BackgroundContainer
+    local nodeFrame = Instance.new("Frame")
+    nodeFrame.Size = UDim2.new(0, 3, 0, 3)
+    nodeFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+    nodeFrame.BorderSizePixel = 0
+    nodeFrame.Parent = BackgroundContainer
     
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = node
+    corner.Parent = nodeFrame
 
     nodes[i] = {
-        frame = node,
+        frame = nodeFrame,
         pos = Vector2.new(math.random(), math.random()),
-        vel = Vector2.new(math.random(-5, 5) / 1000, math.random(-5, 5) / 1000),
-        lines = {}
+        vel = Vector2.new(math.random(-5, 5) / 5000, math.random(-5, 5) / 5000)
     }
 end
 
-local function getLine(folder)
-    local line = Instance.new("Frame")
-    line.BorderSizePixel = 0
-    line.AnchorPoint = Vector2.new(0.5, 0.5)
-    line.ZIndex = -9
-    return line
-end
-
-local lineFolder = Instance.new("Folder", BackgroundContainer)
-local time = 0
-
+local timeVar = 0
 RunService.RenderStepped:Connect(function(dt)
-    time = time + dt
+    timeVar = timeVar + dt
     local w, h = BackgroundContainer.AbsoluteSize.X, BackgroundContainer.AbsoluteSize.Y
-    local currentColor = Color3.fromHSV((time * 0.1) % 1, 0.6, 1)
+    local currentColor = Color3.fromHSV((timeVar * 0.1) % 1, 0.6, 1)
+    
+    for _, l in ipairs(lineCache) do l.Visible = false end
+    activeLines = 0
     
     for i, node in ipairs(nodes) do
         node.pos = node.pos + node.vel
@@ -317,16 +334,12 @@ RunService.RenderStepped:Connect(function(dt)
         node.frame.Position = UDim2.new(node.pos.X, 0, node.pos.Y, 0)
         node.frame.BackgroundColor3 = currentColor
 
-        for _, line in ipairs(node.lines) do line:Destroy() end
-        node.lines = {}
-
         for j = i + 1, #nodes do
             local other = nodes[j]
             local dist = (node.pos - other.pos).Magnitude
             
             if dist < connectionDistance then
                 local line = getLine()
-                line.Parent = lineFolder
                 line.BackgroundColor3 = currentColor
                 line.BackgroundTransparency = (dist / connectionDistance)
                 
@@ -339,8 +352,6 @@ RunService.RenderStepped:Connect(function(dt)
                 line.Size = UDim2.new(0, mag, 0, 1)
                 line.Position = UDim2.new(0, center.X, 0, center.Y)
                 line.Rotation = math.deg(rot)
-                
-                table.insert(node.lines, line)
             end
         end
     end
