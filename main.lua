@@ -326,10 +326,10 @@ RunService.RenderStepped:Connect(function()
     
     local size = BackgroundContainer.AbsoluteSize
     local mousePos = UserInputService:GetMouseLocation()
-    local windowPos = Window.AbsolutePosition
+    local windowPos = BackgroundContainer.AbsolutePosition
     
     local mX = (mousePos.X - windowPos.X) / size.X
-    local mY = (mousePos.Y - (windowPos.Y + 36)) / size.Y 
+    local mY = (mousePos.Y - windowPos.Y) / size.Y 
     local mouseVec = Vector2.new(mX, mY)
 
     activeLines = 0
