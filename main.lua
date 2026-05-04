@@ -14,14 +14,14 @@ function util:egg(stringx)
 end
 
 local main = {}
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-
 local nodes = {}
 local lineCache = {}
-local nodeCount = 30
-local connectionDistance = 0.15
+local nodeCount = 50 
+local connectionDistance = 0.12 
 local activeLines = 0
+
+BackgroundContainer.BackgroundTransparency = 0.85
+BackgroundContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 
 local lineFolder = Instance.new("Folder")
 lineFolder.Name = "LineFolder"
@@ -36,7 +36,6 @@ local function getLine()
     end
 
     local line = Instance.new("Frame")
-    line.Name = "ConnectionLine"
     line.BorderSizePixel = 0
     line.AnchorPoint = Vector2.new(0.5, 0.5)
     line.ZIndex = -9
@@ -301,7 +300,7 @@ GradientBG.ZIndex = -11
 
 for i = 1, nodeCount do
     local nodeFrame = Instance.new("Frame")
-    nodeFrame.Size = UDim2.new(0, 3, 0, 3)
+    nodeFrame.Size = UDim2.new(0, 2, 0, 2)
     nodeFrame.BackgroundColor3 = Color3.new(1, 1, 1)
     nodeFrame.BorderSizePixel = 0
     nodeFrame.Parent = BackgroundContainer
@@ -313,7 +312,7 @@ for i = 1, nodeCount do
     nodes[i] = {
         frame = nodeFrame,
         pos = Vector2.new(math.random(), math.random()),
-        vel = Vector2.new(math.random(-5, 5) / 5000, math.random(-5, 5) / 5000)
+        vel = Vector2.new(math.random(-5, 5) / 10000, math.random(-5, 5) / 10000)
     }
 end
 
@@ -321,18 +320,17 @@ local timeVar = 0
 RunService.RenderStepped:Connect(function(dt)
     timeVar = timeVar + dt
     local w, h = BackgroundContainer.AbsoluteSize.X, BackgroundContainer.AbsoluteSize.Y
-    local currentColor = Color3.fromHSV((timeVar * 0.1) % 1, 0.6, 1)
     
     for _, l in ipairs(lineCache) do l.Visible = false end
     activeLines = 0
     
     for i, node in ipairs(nodes) do
         node.pos = node.pos + node.vel
+        
         if node.pos.X < 0 or node.pos.X > 1 then node.vel = Vector2.new(-node.vel.X, node.vel.Y) end
         if node.pos.Y < 0 or node.pos.Y > 1 then node.vel = Vector2.new(node.vel.X, -node.vel.Y) end
         
         node.frame.Position = UDim2.new(node.pos.X, 0, node.pos.Y, 0)
-        node.frame.BackgroundColor3 = currentColor
 
         for j = i + 1, #nodes do
             local other = nodes[j]
@@ -340,8 +338,8 @@ RunService.RenderStepped:Connect(function(dt)
             
             if dist < connectionDistance then
                 local line = getLine()
-                line.BackgroundColor3 = currentColor
-                line.BackgroundTransparency = (dist / connectionDistance)
+                line.BackgroundColor3 = Color3.new(1, 1, 1)
+                line.BackgroundTransparency = 0.4 + (dist / connectionDistance) * 0.6
                 
                 local p1 = Vector2.new(node.pos.X * w, node.pos.Y * h)
                 local p2 = Vector2.new(other.pos.X * w, other.pos.Y * h)
@@ -357,6 +355,7 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
+    
     local ElementHandler = {}
 
     function ElementHandler:Text(TextDisplay) 
