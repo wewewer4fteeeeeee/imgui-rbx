@@ -20,11 +20,10 @@ function main:Begin(PROPS)
         return
     end
 
-    warn("This is an alpha release of imgui-rbx, expect way more elements being added in later updates! cya");
-    warn("(also expect some bugs)");
+    warn("imgui-rbx ENHANCED | Modern UI with reactive backgrounds");
 
     local MenuOptions = PROPS or {
-        Name = PROPS.Name or "imgui-rbx | alpha 0.1",
+        Name = PROPS.Name or "imgui-rbx | enhanced",
         Width = PROPS.Width or 574,
         Height = PROPS.Height or 350
     }
@@ -41,51 +40,49 @@ function main:Begin(PROPS)
         end
     end
 
-local function GetFont() 
-    local urlllllegoo = PROPS.Font
-    
-    if urlllllegoo and urlllllegoo:find("http") then
-        local uhhsumimportantstuff = "font_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".ttf"
-        local haythisisajson = uhhsumimportantstuff .. ".font"
+    local function GetFont() 
+        local urlllllegoo = PROPS.Font
         
-        local hayyyitworkedlegoo, data = pcall(function() return game:HttpGet(urlllllegoo) end)
-        if hayyyitworkedlegoo and data then
-            writefile(uhhsumimportantstuff, data)
-            local hayitsourfont = getcustomasset(uhhsumimportantstuff)
+        if urlllllegoo and urlllllegoo:find("http") then
+            local uhhsumimportantstuff = "font_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".ttf"
+            local haythisisajson = uhhsumimportantstuff .. ".font"
             
-            local hayyyitsourfontasajson = {
-                name = "hayyyitsourfont",
-                faces = {{
-                    name = "hayyyitsourfont", weight = 400, style = "normal", assetId = hayitsourfont
-                }}
-            }
-            writefile(haythisisajson, game:GetService("HttpService"):JSONEncode(hayyyitsourfontasajson))
-            return Font.new(getcustomasset(haythisisajson))
+            local hayyyitworkedlegoo, data = pcall(function() return game:HttpGet(urlllllegoo) end)
+            if hayyyitworkedlegoo and data then
+                writefile(uhhsumimportantstuff, data)
+                local hayitsourfont = getcustomasset(uhhsumimportantstuff)
+                
+                local hayyyitsourfontasajson = {
+                    name = "hayyyitsourfont",
+                    faces = {{
+                        name = "hayyyitsourfont", weight = 400, style = "normal", assetId = hayitsourfont
+                    }}
+                }
+                writefile(haythisisajson, game:GetService("HttpService"):JSONEncode(hayyyitsourfontasajson))
+                return Font.new(getcustomasset(haythisisajson))
+            end
         end
+
+        return Font.fromId(12187371840)
     end
 
-    return Font.fromId(12187371840)
-end
-
-
-local function imagesuportyippie(url)
-    if not url or url == "" then return nil end
-    if not string.find(url, "http") then return url end
-    local filename = "cache_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-","") .. ".png"
-    local success, _ = pcall(function()
-        writefile(filename, game:HttpGet(url))
-    end)
-    if success then
-        return getcustomasset(filename)
+    local function imagesuportyippie(url)
+        if not url or url == "" then return nil end
+        if not string.find(url, "http") then return url end
+        local filename = "cache_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-","") .. ".png"
+        local success, _ = pcall(function()
+            writefile(filename, game:HttpGet(url))
+        end)
+        if success then
+            return getcustomasset(filename)
+        end
+        return nil
     end
-    return nil
-end
-
-    
 
     local ImGui = Instance.new("ScreenGui")
     local Window = Instance.new("Frame")
     local WindowCorner = Instance.new("UICorner")
+    local WindowStroke = Instance.new("UIStroke")
     local WindowPanel = Instance.new("Frame")
     local WindowPanelIcon = Instance.new("ImageLabel")
     local MinimiseButton = Instance.new("TextButton")
@@ -101,32 +98,38 @@ end
     local WindowElementsPadding = Instance.new("UIPadding")
     
     local WindowElementsContainerLayout = Instance.new("UIListLayout")
-    local AWindowSep = Instance.new("Frame")        
+    local AWindowSep = Instance.new("Frame")
 
     ImGui.Name = string.format("ImGui-%s", tostring(util:egg(tostring(game:GetService("Players").LocalPlayer.UserId))))
     ImGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ImGui.ResetOnSpawn = false
-    SecureGui(ImGui)                                
+    SecureGui(ImGui)
 
     Window.Name = "Window"
     Window.Parent = ImGui
     Window.Active = true
-    Window.BackgroundColor3 = Color3.fromRGB(21, 22, 23)
-    Window.BackgroundTransparency = 0.050
+    Window.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    Window.BackgroundTransparency = 0.1
     Window.ClipsDescendants = true
     Window.Position = UDim2.new(0.283211678, 0, 0.155285195, 0)
     Window.Selectable = true
     Window.Size = UDim2.new(0, MenuOptions.Width, 0, MenuOptions.Height)
 
-    WindowCorner.CornerRadius = UDim.new(0, 9)
+    WindowCorner.CornerRadius = UDim.new(0, 12)
     WindowCorner.Name = "WindowCorner"
     WindowCorner.Parent = Window
+
+    WindowStroke.Name = "WindowStroke"
+    WindowStroke.Parent = Window
+    WindowStroke.Color = Color3.fromRGB(80, 80, 100)
+    WindowStroke.Thickness = 1.5
+    WindowStroke.Transparency = 0.5
 
     WindowPanel.Name = "WindowPanel"
     WindowPanel.Parent = Window
     WindowPanel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     WindowPanel.BackgroundTransparency = 1.000
-    WindowPanel.Size = UDim2.new(1, 0, 0, 25)
+    WindowPanel.Size = UDim2.new(1, 0, 0, 30)
     WindowPanel.ZIndex = 2
 
     WindowPanelIcon.Name = "WindowPanelIcon"
@@ -139,6 +142,7 @@ end
     WindowPanelIcon.ZIndex = 2
     WindowPanelIcon.Image = "rbxassetid://13034670565"
     WindowPanelIcon.ScaleType = Enum.ScaleType.Tile
+    WindowPanelIcon.ImageTransparency = 0.85
 
     MinimiseButton.Name = "MinimiseButton"
     MinimiseButton.Parent = WindowPanelIcon
@@ -174,7 +178,7 @@ end
     WindowDisplayName.Size = UDim2.new(1, 0, 1, 0)
     WindowDisplayName.FontFace = GetFont()
     WindowDisplayName.Text = PROPS.Name
-    WindowDisplayName.TextColor3 = Color3.fromRGB(225, 225, 225)
+    WindowDisplayName.TextColor3 = Color3.fromRGB(240, 240, 245)
     WindowDisplayName.TextSize = 16.000
     WindowDisplayName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -201,7 +205,7 @@ end
     ResizeAllIcon.AnchorPoint = Vector2.new(0.5, 0.5)
     ResizeAllIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     ResizeAllIcon.BackgroundTransparency = 1.000
-    ResizeAllIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    ResizeAll.Position = UDim2.new(0.5, 0, 0.5, 0)
     ResizeAllIcon.Size = UDim2.new(1.06818187, 0, 1, 0)
     ResizeAllIcon.ZIndex = -1
     ResizeAllIcon.Image = "rbxassetid://13034819689"
@@ -219,15 +223,16 @@ end
     WindowElements.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     WindowElements.BackgroundTransparency = 1.000
     WindowElements.BorderSizePixel = 0
-    WindowElements.Position = UDim2.new(0.5, 0, 0.54285717, 0)
-    WindowElements.Size = UDim2.new(1, -5, 0.914285719, 0)
+    WindowElements.Position = UDim2.new(0.5, 0, 0.555, 0)
+    WindowElements.Size = UDim2.new(1, -5, 0.9, 0)
     WindowElements.CanvasSize = UDim2.new(0, 0, 0, 0)
-    WindowElements.ScrollBarThickness = 10
+    WindowElements.ScrollBarThickness = 8
+    WindowElements.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
 
     WindowElementsLayout.Name = "WindowElementsLayout"
     WindowElementsLayout.Parent = WindowElements
     WindowElementsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    WindowElementsLayout.Padding = UDim.new(0, 6)
+    WindowElementsLayout.Padding = UDim.new(0, 8)
 
     WindowElementsPadding.Name = "WindowElementsPadding"
     WindowElementsPadding.Parent = WindowElements
@@ -245,7 +250,186 @@ end
     AWindowSep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     AWindowSep.BackgroundTransparency = 1.000
     AWindowSep.Position = UDim2.new(0.00609756075, 0, 0, 0)
-    AWindowSep.Size = UDim2.new(0, 567, 0, 25)
+    AWindowSep.Size = UDim2.new(0, 567, 0, 30)
+
+    -- ENHANCED BACKGROUND SYSTEM
+    local BackgroundContainer = Instance.new("Frame")
+    BackgroundContainer.Name = "BackgroundContainer"
+    BackgroundContainer.Parent = Window
+    BackgroundContainer.BackgroundTransparency = 1
+    BackgroundContainer.Size = UDim2.new(1, 0, 1, 0)
+    BackgroundContainer.ZIndex = -10
+    BackgroundContainer.ClipsDescendants = true
+
+    -- Gradient Background
+    local GradientBG = Instance.new("Frame")
+    GradientBG.Name = "GradientBG"
+    GradientBG.Parent = BackgroundContainer
+    GradientBG.Size = UDim2.new(1.5, 0, 1.5, 0)
+    GradientBG.Position = UDim2.new(-0.25, 0, -0.25, 0)
+    GradientBG.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    GradientBG.BackgroundTransparency = 0
+    GradientBG.ZIndex = -10
+
+    local Gradient = Instance.new("UIGradient")
+    Gradient.Parent = GradientBG
+    Gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 50)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 30, 80)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 50, 70))
+    })
+    Gradient.Rotation = 45
+
+    -- Mouse tracking for gradient
+    local UserInputService = game:GetService("UserInputService")
+    local RunService = game:GetService("RunService")
+    local TweenService = game:GetService("TweenService")
+    
+    local mouseX, mouseY = 0.5, 0.5
+    
+    RunService.RenderStepped:Connect(function()
+        local mousePos = UserInputService:GetMouseLocation()
+        local windowPos = Window.AbsolutePosition
+        local windowSize = Window.AbsoluteSize
+        
+        mouseX = math.clamp((mousePos.X - windowPos.X) / windowSize.X, 0, 1)
+        mouseY = math.clamp((mousePos.Y - windowPos.Y) / windowSize.Y, 0, 1)
+        
+        -- Smooth gradient rotation based on mouse
+        local targetRotation = 45 + (mouseX - 0.5) * 90
+        Gradient.Rotation = Gradient.Rotation + (targetRotation - Gradient.Rotation) * 0.05
+        
+        -- Move gradient position
+        local offsetX = (mouseX - 0.5) * 0.3
+        local offsetY = (mouseY - 0.5) * 0.3
+        GradientBG.Position = UDim2.new(-0.25 + offsetX, 0, -0.25 + offsetY, 0)
+    end)
+
+    -- Enhanced Pattern Background System
+    local function CreateEnhancedPatterns()
+        -- Layer 1: Main zigzag
+        local Layer1 = Instance.new("Frame")
+        Layer1.Name = "PatternLayer1"
+        Layer1.Parent = BackgroundContainer
+        Layer1.BackgroundTransparency = 1
+        Layer1.Size = UDim2.new(1, 0, 1, 0)
+        Layer1.ZIndex = -9
+        Layer1.ClipsDescendants = true
+        
+        local points1 = {}
+        for i = 1, 150 do
+            local point = Instance.new("Frame")
+            point.Size = UDim2.new(0, 2, 0, 2)
+            point.BackgroundColor3 = Color3.fromRGB(120, 140, 255)
+            point.BackgroundTransparency = 0.3
+            point.BorderSizePixel = 0
+            point.ZIndex = -9
+            
+            local glow = Instance.new("UIStroke")
+            glow.Parent = point
+            glow.Color = Color3.fromRGB(120, 140, 255)
+            glow.Thickness = 1
+            glow.Transparency = 0.7
+            
+            point.Parent = Layer1
+            points1[i] = point
+        end
+        
+        -- Layer 2: Secondary pattern
+        local Layer2 = Instance.new("Frame")
+        Layer2.Name = "PatternLayer2"
+        Layer2.Parent = BackgroundContainer
+        Layer2.BackgroundTransparency = 1
+        Layer2.Size = UDim2.new(1, 0, 1, 0)
+        Layer2.ZIndex = -8
+        Layer2.ClipsDescendants = true
+        
+        local points2 = {}
+        for i = 1, 100 do
+            local point = Instance.new("Frame")
+            point.Size = UDim2.new(0, 3, 0, 3)
+            point.BackgroundColor3 = Color3.fromRGB(255, 100, 180)
+            point.BackgroundTransparency = 0.5
+            point.BorderSizePixel = 0
+            point.ZIndex = -8
+            
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(1, 0)
+            corner.Parent = point
+            
+            point.Parent = Layer2
+            points2[i] = point
+        end
+        
+        -- Layer 3: Ambient particles
+        local Layer3 = Instance.new("Frame")
+        Layer3.Name = "PatternLayer3"
+        Layer3.Parent = BackgroundContainer
+        Layer3.BackgroundTransparency = 1
+        Layer3.Size = UDim2.new(1, 0, 1, 0)
+        Layer3.ZIndex = -7
+        Layer3.ClipsDescendants = true
+        
+        local particles = {}
+        for i = 1, 30 do
+            local particle = Instance.new("Frame")
+            particle.Size = UDim2.new(0, math.random(2, 5), 0, math.random(2, 5))
+            particle.BackgroundColor3 = Color3.fromRGB(200, 200, 255)
+            particle.BackgroundTransparency = math.random(60, 85) / 100
+            particle.BorderSizePixel = 0
+            particle.ZIndex = -7
+            
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(1, 0)
+            corner.Parent = particle
+            
+            particle.Parent = Layer3
+            particles[i] = {
+                frame = particle,
+                speedX = math.random(-50, 50) / 1000,
+                speedY = math.random(-50, 50) / 1000,
+                x = math.random(0, 100) / 100,
+                y = math.random(0, 100) / 100
+            }
+        end
+        
+        local time = 0
+        RunService.RenderStepped:Connect(function(dt)
+            time = time + dt
+            local h = Layer1.AbsoluteSize.Y
+            local w = Layer1.AbsoluteSize.X
+            
+            -- Update Layer 1 (main zigzag)
+            for i, p in ipairs(points1) do
+                local rx = (i / #points1)
+                local mouseInfluence = math.abs(rx - mouseX) < 0.2 and (0.2 - math.abs(rx - mouseX)) * 5 or 0
+                local calc = math.sin((rx * 8 + time * 2 + mouseX * 2) * math.pi) * (1 + mouseInfluence)
+                local y = (calc * 40) + (h / 2) + (mouseY - 0.5) * 30
+                p.Position = UDim2.new(rx, 0, 0, y)
+                
+                -- Color shift
+                local hue = (time * 0.1 + rx) % 1
+                p.BackgroundColor3 = Color3.fromHSV(hue * 0.3 + 0.5, 0.6, 1)
+            end
+            
+            -- Update Layer 2 (secondary wave)
+            for i, p in ipairs(points2) do
+                local rx = (i / #points2)
+                local calc = math.sin((rx * 6 - time * 1.5) * math.pi) * math.cos((rx * 3 + mouseY) * math.pi)
+                local y = (calc * 30) + (h / 2) + (mouseX - 0.5) * 40
+                p.Position = UDim2.new(rx, 0, 0, y)
+            end
+            
+            -- Update Layer 3 (particles)
+            for i, data in ipairs(particles) do
+                data.x = (data.x + data.speedX + (mouseX - 0.5) * 0.001) % 1
+                data.y = (data.y + data.speedY + (mouseY - 0.5) * 0.001) % 1
+                data.frame.Position = UDim2.new(data.x, 0, data.y, 0)
+            end
+        end)
+    end
+    
+    CreateEnhancedPatterns()
 
     local ElementHandler = {}
 
@@ -258,7 +442,7 @@ end
         Label_Element.Size = UDim2.new(1, 0, 0, 20)
         Label_Element.FontFace = GetFont()
         Label_Element.Text = TextDisplay
-        Label_Element.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Label_Element.TextColor3 = Color3.fromRGB(240, 240, 250)
         Label_Element.TextSize = 17.000
         Label_Element.TextXAlignment = Enum.TextXAlignment.Left
     end
@@ -266,23 +450,46 @@ end
     function ElementHandler:Button(TextDisplay) 
         local Button_Element = Instance.new("TextButton")
         local Button_ElementPadding = Instance.new("UIPadding")
+        local Button_Corner = Instance.new("UICorner")
+        local Button_Stroke = Instance.new("UIStroke")
         local OnClick = {}
 
         Button_Element.Name = "Button_Element"
         Button_Element.Parent = WindowElements
-        Button_Element.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Button_Element.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Button_Element.BackgroundColor3 = Color3.fromRGB(60, 90, 150)
+        Button_Element.BorderSizePixel = 0
         Button_Element.Position = UDim2.new(0, 0, 0.0833333358, 0)
-        Button_Element.Size = UDim2.new(0, 21, 0, 23)
+        Button_Element.Size = UDim2.new(0, 21, 0, 26)
         Button_Element.FontFace = GetFont()
         Button_Element.Text = TextDisplay
         Button_Element.TextColor3 = Color3.fromRGB(255, 255, 255)
         Button_Element.TextSize = 17.000
+        Button_Element.AutoButtonColor = false
+
+        Button_Corner.CornerRadius = UDim.new(0, 6)
+        Button_Corner.Parent = Button_Element
+
+        Button_Stroke.Name = "Button_Stroke"
+        Button_Stroke.Parent = Button_Element
+        Button_Stroke.Color = Color3.fromRGB(100, 130, 200)
+        Button_Stroke.Thickness = 1
+        Button_Stroke.Transparency = 0.5
 
         Button_ElementPadding.Name = "Button_ElementPadding"
         Button_ElementPadding.Parent = Button_Element
-        Button_ElementPadding.PaddingLeft = UDim.new(0, 6)
-        Button_ElementPadding.PaddingRight = UDim.new(0, 6)
+        Button_ElementPadding.PaddingLeft = UDim.new(0, 10)
+        Button_ElementPadding.PaddingRight = UDim.new(0, 10)
+
+        -- Hover effect
+        Button_Element.MouseEnter:Connect(function()
+            TweenService:Create(Button_Element, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 110, 180)}):Play()
+            TweenService:Create(Button_Stroke, TweenInfo.new(0.2), {Transparency = 0.2}):Play()
+        end)
+        
+        Button_Element.MouseLeave:Connect(function()
+            TweenService:Create(Button_Element, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 90, 150)}):Play()
+            TweenService:Create(Button_Stroke, TweenInfo.new(0.2), {Transparency = 0.5}):Play()
+        end)
 
         Button_Element.Activated:Connect(function(inputObject, clickCount)
             if inputObject.UserInputType.Name == "MouseButton1" then 
@@ -299,7 +506,7 @@ end
 
         local size = box.TextBounds.X
         
-        if game:IsLoaded() then box.Size = UDim2.new(0, size + 20, 0, 23) end
+        if game:IsLoaded() then box.Size = UDim2.new(0, size + 25, 0, 26) end
 
         return OnClick
     end
@@ -310,22 +517,24 @@ end
         local TextBox_ElementLayout = Instance.new("UIListLayout")
         local TextBox_ElementInput = Instance.new("TextBox")
         local TextBox_ElementInputPadding = Instance.new("UIPadding")
+        local TextBox_Corner = Instance.new("UICorner")
+        local TextBox_Stroke = Instance.new("UIStroke")
 
         TextBox_Element.Name = "TextBox_Element"
         TextBox_Element.Parent = WindowElements
         TextBox_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         TextBox_Element.BackgroundTransparency = 1.000
-        TextBox_Element.Size = UDim2.new(1, 0, 0, 23)
+        TextBox_Element.Size = UDim2.new(1, 0, 0, 26)
 
         TextBox_ElementName.Name = "TextBox_ElementName"
         TextBox_ElementName.Parent = TextBox_Element
         TextBox_ElementName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         TextBox_ElementName.BackgroundTransparency = 1.000
         TextBox_ElementName.Position = UDim2.new(2.21000004, 0, 0, 0)
-        TextBox_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 20)
+        TextBox_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 23)
         TextBox_ElementName.FontFace = GetFont()
         TextBox_ElementName.Text = InputTextOptions.Name
-        TextBox_ElementName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TextBox_ElementName.TextColor3 = Color3.fromRGB(240, 240, 250)
         TextBox_ElementName.TextSize = 17.000
         TextBox_ElementName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -336,31 +545,42 @@ end
 
         TextBox_ElementInput.Name = "TextBox_ElementInput"
         TextBox_ElementInput.Parent = TextBox_Element
-        TextBox_ElementInput.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        TextBox_ElementInput.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        TextBox_ElementInput.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        TextBox_ElementInput.BorderSizePixel = 0
         TextBox_ElementInput.ClipsDescendants = true
-        TextBox_ElementInput.Size = UDim2.new(0.300000012, 0, 1, 0)
+        TextBox_ElementInput.Size = UDim2.new(0.32, 0, 1, 0)
         TextBox_ElementInput.ClearTextOnFocus = false
         TextBox_ElementInput.FontFace = GetFont()
-        TextBox_ElementInput.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+        TextBox_ElementInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 190)
         TextBox_ElementInput.ShowNativeInput = false
         TextBox_ElementInput.Text = ""
-        TextBox_ElementInput.TextColor3 = Color3.fromRGB(221, 221, 221)
+        TextBox_ElementInput.TextColor3 = Color3.fromRGB(240, 240, 250)
         TextBox_ElementInput.TextSize = 16.000
         TextBox_ElementInput.TextXAlignment = Enum.TextXAlignment.Left
 
+        TextBox_Corner.CornerRadius = UDim.new(0, 6)
+        TextBox_Corner.Parent = TextBox_ElementInput
+
+        TextBox_Stroke.Parent = TextBox_ElementInput
+        TextBox_Stroke.Color = Color3.fromRGB(80, 100, 150)
+        TextBox_Stroke.Thickness = 1
+        TextBox_Stroke.Transparency = 0.6
+
         TextBox_ElementInputPadding.Name = "TextBox_ElementInputPadding"
         TextBox_ElementInputPadding.Parent = TextBox_ElementInput
-        TextBox_ElementInputPadding.PaddingLeft = UDim.new(0, 5)
-        TextBox_ElementInputPadding.PaddingRight = UDim.new(0, 5)
+        TextBox_ElementInputPadding.PaddingLeft = UDim.new(0, 8)
+        TextBox_ElementInputPadding.PaddingRight = UDim.new(0, 8)
+
+        TextBox_ElementInput.Focused:Connect(function()
+            TweenService:Create(TextBox_Stroke, TweenInfo.new(0.2), {Transparency = 0.2, Color = Color3.fromRGB(120, 140, 255)}):Play()
+        end)
 
         TextBox_ElementInput.FocusLost:Connect(function(enterPressed, inputThatCausedFocusLoss)
+            TweenService:Create(TextBox_Stroke, TweenInfo.new(0.2), {Transparency = 0.6, Color = Color3.fromRGB(80, 100, 150)}):Play()
             if enterPressed then
                 pcall(InputTextOptions.OnEnter, TextBox_ElementInput.Text)
             end
         end)
-                
-        
     end
 
     function ElementHandler:SliderFloat(SliderOptions) 
@@ -371,28 +591,42 @@ end
         local Slider_ElementOnInput = Instance.new("TextButton")
         local Slider_ElementName = Instance.new("TextLabel")
         local Slider_ElementLayout = Instance.new("UIListLayout")
+        local Slider_Corner = Instance.new("UICorner")
+        local Selector_Corner = Instance.new("UICorner")
+        local Slider_Stroke = Instance.new("UIStroke")
 
         Slider_Element.Name = "Slider_Element"
         Slider_Element.Parent = WindowElements
         Slider_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Slider_Element.BackgroundTransparency = 1.000
-        Slider_Element.Size = UDim2.new(1, 0, 0, 23)
+        Slider_Element.Size = UDim2.new(1, 0, 0, 26)
 
         Slider_ElementFrame.Name = "Slider_ElementFrame"
         Slider_ElementFrame.Parent = Slider_Element
-        Slider_ElementFrame.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Slider_ElementFrame.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Slider_ElementFrame.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        Slider_ElementFrame.BorderSizePixel = 0
         Slider_ElementFrame.ClipsDescendants = true
-        Slider_ElementFrame.Size = UDim2.new(0.300000012, 0, -3.34800005, 100)
+        Slider_ElementFrame.Size = UDim2.new(0.32, 0, 1, 0)
+
+        Slider_Corner.CornerRadius = UDim.new(0, 6)
+        Slider_Corner.Parent = Slider_ElementFrame
+
+        Slider_Stroke.Parent = Slider_ElementFrame
+        Slider_Stroke.Color = Color3.fromRGB(80, 100, 150)
+        Slider_Stroke.Thickness = 1
+        Slider_Stroke.Transparency = 0.6
 
         Slider_ElementSelector.Name = "Slider_ElementSelector"
         Slider_ElementSelector.Parent = Slider_ElementFrame
         Slider_ElementSelector.AnchorPoint = Vector2.new(0.5, 0.5)
-        Slider_ElementSelector.BackgroundColor3 = Color3.fromRGB(70, 128, 209)
-        Slider_ElementSelector.BackgroundTransparency = 0.150
+        Slider_ElementSelector.BackgroundColor3 = Color3.fromRGB(120, 140, 255)
+        Slider_ElementSelector.BackgroundTransparency = 0
         Slider_ElementSelector.BorderSizePixel = 0
         Slider_ElementSelector.Position = UDim2.new(0, 10, 0.5, 0)
-        Slider_ElementSelector.Size = UDim2.new(0, 13, 0, 21)
+        Slider_ElementSelector.Size = UDim2.new(0, 16, 0, 24)
+
+        Selector_Corner.CornerRadius = UDim.new(0, 4)
+        Selector_Corner.Parent = Slider_ElementSelector
 
         Slider_ElementValue.Name = "Slider_ElementValue"
         Slider_ElementValue.Parent = Slider_ElementFrame
@@ -404,7 +638,7 @@ end
         Slider_ElementValue.FontFace = GetFont()
         Slider_ElementValue.LineHeight = 0.930
         Slider_ElementValue.Text = SliderOptions.Default
-        Slider_ElementValue.TextColor3 = Color3.fromRGB(217, 217, 217)
+        Slider_ElementValue.TextColor3 = Color3.fromRGB(240, 240, 250)
         Slider_ElementValue.TextSize = 17.000
 
         Slider_ElementOnInput.Name = "Slider_ElementOnInput"
@@ -422,10 +656,10 @@ end
         Slider_ElementName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Slider_ElementName.BackgroundTransparency = 1.000
         Slider_ElementName.Position = UDim2.new(2.21000004, 0, 0, 0)
-        Slider_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 20)
+        Slider_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 23)
         Slider_ElementName.FontFace = GetFont()
         Slider_ElementName.Text = SliderOptions.Name
-        Slider_ElementName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Slider_ElementName.TextColor3 = Color3.fromRGB(240, 240, 250)
         Slider_ElementName.TextSize = 17.000
         Slider_ElementName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -433,8 +667,6 @@ end
         Slider_ElementLayout.Parent = Slider_Element
         Slider_ElementLayout.FillDirection = Enum.FillDirection.Horizontal
         Slider_ElementLayout.Padding = UDim.new(0, 7)
-
-        local UserInputService = game:GetService("UserInputService")
 
         local minValue = SliderOptions.Min
         local maxValue = SliderOptions.Max
@@ -446,16 +678,13 @@ end
             local sliderPosition = math.clamp(input.Position.X - (Slider_ElementOnInput.AbsolutePosition.X + 5), 0, sliderWidth) / sliderWidth
             local sliderValue = minValue + (maxValue - minValue) * sliderPosition
 
-            -- Check if the slider selector has reached the start of the slider
             if sliderPosition <= 0 then
                 sliderPosition = 0
                 sliderValue = minValue
-                -- Check if the slider selector has reached the end of the slider
             elseif sliderPosition >= 1 then
                 sliderPosition = 1
                 sliderValue = maxValue
             else
-                -- The slider is in the middle of the track, so update the slider value accordingly
                 sliderValue = minValue + (maxValue - minValue) * sliderPosition
             end
 
@@ -478,14 +707,17 @@ end
 
         Slider_ElementOnInput.MouseButton1Down:Connect(function()
             dragging = true
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 18, 0, 26)}):Play()
         end)
 
         Slider_ElementOnInput.MouseButton1Up:Connect(function()
             dragging = false
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 16, 0, 24)}):Play()
         end)
 
         Slider_ElementFrame.MouseLeave:Connect(function() 
             dragging = false
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 16, 0, 24)}):Play()
         end)
 
         UserInputService.InputChanged:Connect(function(input)
@@ -503,28 +735,42 @@ end
         local Slider_ElementOnInput = Instance.new("TextButton")
         local Slider_ElementName = Instance.new("TextLabel")
         local Slider_ElementLayout = Instance.new("UIListLayout")
+        local Slider_Corner = Instance.new("UICorner")
+        local Selector_Corner = Instance.new("UICorner")
+        local Slider_Stroke = Instance.new("UIStroke")
 
         Slider_Element.Name = "Slider_Element"
         Slider_Element.Parent = WindowElements
         Slider_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Slider_Element.BackgroundTransparency = 1.000
-        Slider_Element.Size = UDim2.new(1, 0, 0, 23)
+        Slider_Element.Size = UDim2.new(1, 0, 0, 26)
 
         Slider_ElementFrame.Name = "Slider_ElementFrame"
         Slider_ElementFrame.Parent = Slider_Element
-        Slider_ElementFrame.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Slider_ElementFrame.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Slider_ElementFrame.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        Slider_ElementFrame.BorderSizePixel = 0
         Slider_ElementFrame.ClipsDescendants = true
-        Slider_ElementFrame.Size = UDim2.new(0.300000012, 0, -3.34800005, 100)
+        Slider_ElementFrame.Size = UDim2.new(0.32, 0, 1, 0)
+
+        Slider_Corner.CornerRadius = UDim.new(0, 6)
+        Slider_Corner.Parent = Slider_ElementFrame
+
+        Slider_Stroke.Parent = Slider_ElementFrame
+        Slider_Stroke.Color = Color3.fromRGB(80, 100, 150)
+        Slider_Stroke.Thickness = 1
+        Slider_Stroke.Transparency = 0.6
 
         Slider_ElementSelector.Name = "Slider_ElementSelector"
         Slider_ElementSelector.Parent = Slider_ElementFrame
         Slider_ElementSelector.AnchorPoint = Vector2.new(0.5, 0.5)
-        Slider_ElementSelector.BackgroundColor3 = Color3.fromRGB(70, 128, 209)
-        Slider_ElementSelector.BackgroundTransparency = 0.150
+        Slider_ElementSelector.BackgroundColor3 = Color3.fromRGB(120, 140, 255)
+        Slider_ElementSelector.BackgroundTransparency = 0
         Slider_ElementSelector.BorderSizePixel = 0
         Slider_ElementSelector.Position = UDim2.new(0, 10, 0.5, 0)
-        Slider_ElementSelector.Size = UDim2.new(0, 13, 0, 21)
+        Slider_ElementSelector.Size = UDim2.new(0, 16, 0, 24)
+
+        Selector_Corner.CornerRadius = UDim.new(0, 4)
+        Selector_Corner.Parent = Slider_ElementSelector
 
         Slider_ElementValue.Name = "Slider_ElementValue"
         Slider_ElementValue.Parent = Slider_ElementFrame
@@ -536,7 +782,7 @@ end
         Slider_ElementValue.FontFace = GetFont()
         Slider_ElementValue.LineHeight = 0.930
         Slider_ElementValue.Text = SliderOptions.Default
-        Slider_ElementValue.TextColor3 = Color3.fromRGB(217, 217, 217)
+        Slider_ElementValue.TextColor3 = Color3.fromRGB(240, 240, 250)
         Slider_ElementValue.TextSize = 17.000
 
         Slider_ElementOnInput.Name = "Slider_ElementOnInput"
@@ -554,10 +800,10 @@ end
         Slider_ElementName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Slider_ElementName.BackgroundTransparency = 1.000
         Slider_ElementName.Position = UDim2.new(2.21000004, 0, 0, 0)
-        Slider_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 20)
+        Slider_ElementName.Size = UDim2.new(1, 0, 0.0299999993, 23)
         Slider_ElementName.FontFace = GetFont()
         Slider_ElementName.Text = SliderOptions.Name
-        Slider_ElementName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Slider_ElementName.TextColor3 = Color3.fromRGB(240, 240, 250)
         Slider_ElementName.TextSize = 17.000
         Slider_ElementName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -565,8 +811,6 @@ end
         Slider_ElementLayout.Parent = Slider_Element
         Slider_ElementLayout.FillDirection = Enum.FillDirection.Horizontal
         Slider_ElementLayout.Padding = UDim.new(0, 7)
-
-        local UserInputService = game:GetService("UserInputService")
 
         local minValue = SliderOptions.Min
         local maxValue = SliderOptions.Max
@@ -578,16 +822,13 @@ end
             local sliderPosition = math.clamp(input.Position.X - (Slider_ElementOnInput.AbsolutePosition.X + 5), 0, sliderWidth) / sliderWidth
             local sliderValue = minValue + (maxValue - minValue) * sliderPosition
 
-            -- Check if the slider selector has reached the start of the slider
             if sliderPosition <= 0 then
                 sliderPosition = 0
                 sliderValue = minValue
-                -- Check if the slider selector has reached the end of the slider
             elseif sliderPosition >= 1 then
                 sliderPosition = 1
                 sliderValue = maxValue
             else
-                -- The slider is in the middle of the track, so update the slider value accordingly
                 sliderValue = math.floor(minValue + (maxValue - minValue) * sliderPosition)
             end
 
@@ -610,14 +851,17 @@ end
 
         Slider_ElementOnInput.MouseButton1Down:Connect(function()
             dragging = true
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 18, 0, 26)}):Play()
         end)
 
         Slider_ElementOnInput.MouseButton1Up:Connect(function()
             dragging = false
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 16, 0, 24)}):Play()
         end)
 
         Slider_ElementFrame.MouseLeave:Connect(function() 
             dragging = false
+            TweenService:Create(Slider_ElementSelector, TweenInfo.new(0.1), {Size = UDim2.new(0, 16, 0, 24)}):Play()
         end)
 
         UserInputService.InputChanged:Connect(function(input)
@@ -634,6 +878,8 @@ end
         local CheckBox_ElementBoxInput = Instance.new("TextButton")
         local CheckBox_ElementImage = Instance.new("ImageLabel")
         local CheckBox_ElementName = Instance.new("TextLabel")
+        local CheckBox_Corner = Instance.new("UICorner")
+        local CheckBox_Stroke = Instance.new("UIStroke")
 
         local Enabled = CheckBoxOptions.Enabled
 
@@ -641,7 +887,7 @@ end
         CheckBox_Element.Parent = WindowElements
         CheckBox_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         CheckBox_Element.BackgroundTransparency = 1.000
-        CheckBox_Element.Size = UDim2.new(1, 0, 0, 23)
+        CheckBox_Element.Size = UDim2.new(1, 0, 0, 26)
         
         CheckBox_ElementLayout.Name = "CheckBox_ElementLayout"
         CheckBox_ElementLayout.Parent = CheckBox_Element
@@ -651,9 +897,17 @@ end
         
         CheckBox_ElementBox.Name = "CheckBox_ElementBox"
         CheckBox_ElementBox.Parent = CheckBox_Element
-        CheckBox_ElementBox.BackgroundColor3 = Color3.fromRGB(36, 65, 106)
-        CheckBox_ElementBox.BorderColor3 = Color3.fromRGB(74, 74, 83)
-        CheckBox_ElementBox.Size = UDim2.new(0, 22, 0, 22)
+        CheckBox_ElementBox.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        CheckBox_ElementBox.BorderSizePixel = 0
+        CheckBox_ElementBox.Size = UDim2.new(0, 24, 0, 24)
+
+        CheckBox_Corner.CornerRadius = UDim.new(0, 6)
+        CheckBox_Corner.Parent = CheckBox_ElementBox
+
+        CheckBox_Stroke.Parent = CheckBox_ElementBox
+        CheckBox_Stroke.Color = Color3.fromRGB(80, 100, 150)
+        CheckBox_Stroke.Thickness = 1
+        CheckBox_Stroke.Transparency = 0.6
         
         CheckBox_ElementBoxInput.Name = "CheckBox_ElementBoxInput"
         CheckBox_ElementBoxInput.Parent = CheckBox_ElementBox
@@ -666,6 +920,7 @@ end
         CheckBox_ElementBoxInput.Text = ""
         CheckBox_ElementBoxInput.TextColor3 = Color3.fromRGB(0, 0, 0)
         CheckBox_ElementBoxInput.TextSize = 14.000
+        CheckBox_ElementBoxInput.AutoButtonColor = false
         
         CheckBox_ElementImage.Name = "CheckBox_ElementImage"
         CheckBox_ElementImage.Parent = CheckBox_ElementBox
@@ -673,22 +928,24 @@ end
         CheckBox_ElementImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         CheckBox_ElementImage.BackgroundTransparency = 1.000
         CheckBox_ElementImage.Position = UDim2.new(0.5, 0, 0.5, 0)
-        CheckBox_ElementImage.Size = UDim2.new(0, 14, 0, 16)
+        CheckBox_ElementImage.Size = UDim2.new(0, 16, 0, 16)
         CheckBox_ElementImage.Image = "rbxassetid://13058405207"
+        CheckBox_ElementImage.ImageColor3 = Color3.fromRGB(120, 140, 255)
         
         CheckBox_ElementName.Name = "CheckBox_ElementName"
         CheckBox_ElementName.Parent = CheckBox_Element
         CheckBox_ElementName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         CheckBox_ElementName.BackgroundTransparency = 1.000
-        CheckBox_ElementName.Size = UDim2.new(1, 0, 0, 20)
+        CheckBox_ElementName.Size = UDim2.new(1, 0, 0, 23)
         CheckBox_ElementName.FontFace = GetFont()
         CheckBox_ElementName.Text = CheckBoxOptions.Name
-        CheckBox_ElementName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CheckBox_ElementName.TextColor3 = Color3.fromRGB(240, 240, 250)
         CheckBox_ElementName.TextSize = 17.000
         CheckBox_ElementName.TextXAlignment = Enum.TextXAlignment.Left
                 
         if Enabled then
             CheckBox_ElementImage.Visible = true
+            CheckBox_ElementBox.BackgroundColor3 = Color3.fromRGB(60, 90, 150)
             pcall(CheckBoxOptions.OnChanged, Enabled)
         else
             CheckBox_ElementImage.Visible = false
@@ -700,50 +957,54 @@ end
 
             if Enabled then
                 CheckBox_ElementImage.Visible = true
+                TweenService:Create(CheckBox_ElementBox, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 90, 150)}):Play()
+                TweenService:Create(CheckBox_Stroke, TweenInfo.new(0.2), {Transparency = 0.3}):Play()
             else
                 CheckBox_ElementImage.Visible = false
+                TweenService:Create(CheckBox_ElementBox, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 60, 100)}):Play()
+                TweenService:Create(CheckBox_Stroke, TweenInfo.new(0.2), {Transparency = 0.6}):Play()
             end
 
             pcall(CheckBoxOptions.OnChanged, Enabled)
         end)
     end
 
+    function ElementHandler:imgyoo(config)
+        local hayimg = config.hayimg or ""
+        local asset = imagesuportyippie(hayimg)
+        
+        local img_element = Instance.new("Frame")
+        local img_display = Instance.new("ImageLabel")
+        local img_corner = Instance.new("UICorner")
+        
+        img_element.Name = "imgyoo_element"
+        img_element.Parent = WindowElements
+        img_element.BackgroundTransparency = 1
+        img_element.Size = UDim2.new(1, 0, 0, 90) 
+        
+        img_display.Name = "hayyyitsourimg"
+        img_display.Parent = img_element
+        img_display.AnchorPoint = Vector2.new(0, 0.5)
+        img_display.Position = UDim2.new(0, 5, 0.5, 0)
+        img_display.Size = UDim2.new(0, 80, 0, 80) 
+        img_display.Image = asset or ""
+        img_display.BackgroundTransparency = 0.9
+        img_display.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
 
+        img_corner.CornerRadius = UDim.new(0, 8)
+        img_corner.Parent = img_display
+        
+        return img_element
+    end
 
-
-function ElementHandler:imgyoo(config)
-    local hayimg = config.hayimg or ""
-    local asset = imagesuportyippie(hayimg)
-    
-    local img_element = Instance.new("Frame")
-    local img_display = Instance.new("ImageLabel")
-    
-    img_element.Name = "imgyoo_element"
-    img_element.Parent = WindowElements
-    img_element.BackgroundTransparency = 1
-    img_element.Size = UDim2.new(1, 0, 0, 100) 
-    
-    img_display.Name = "hayyyitsourimg"
-    img_display.Parent = img_element
-    img_display.AnchorPoint = Vector2.new(0, 0.5)
-    img_display.Position = UDim2.new(0, 5, 0.5, 0)
-    img_display.Size = UDim2.new(0, 80, 0, 80) 
-    img_display.Image = asset or ""
-    img_display.BackgroundTransparency = 1
-    
-    return img_element
-end
-
-
-            
     function ElementHandler:Seperator() 
         local Seperator_Element = Instance.new("Frame")
         
         Seperator_Element.Name = "Seperator_Element"
         Seperator_Element.Parent = WindowElements
-        Seperator_Element.BackgroundColor3 = Color3.fromRGB(74, 74, 83)
-        Seperator_Element.BorderColor3 = Color3.fromRGB(27, 42, 53)
+        Seperator_Element.BackgroundColor3 = Color3.fromRGB(80, 100, 120)
         Seperator_Element.BorderSizePixel = 0
+        Seperator_Element.BackgroundTransparency = 0.7
         Seperator_Element.Size = UDim2.new(1, 0, 0, 1)
     end
 
@@ -769,7 +1030,7 @@ end
         Color_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Color_Element.BackgroundTransparency = 1.000
         Color_Element.Position = UDim2.new(0, 0, 0.49666667, 0)
-        Color_Element.Size = UDim2.new(1, 0, 0, 23)
+        Color_Element.Size = UDim2.new(1, 0, 0, 26)
 
         Color_ElementLayout.Name = "Color_ElementLayout"
         Color_ElementLayout.Parent = Color_Element
@@ -777,11 +1038,15 @@ end
         Color_ElementLayout.SortOrder = Enum.SortOrder.LayoutOrder
         Color_ElementLayout.Padding = UDim.new(0, 7)
 
+        -- Red
         Color_ElementRed.Name = "Color_ElementRed"
         Color_ElementRed.Parent = Color_Element
-        Color_ElementRed.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Color_ElementRed.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Color_ElementRed.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        Color_ElementRed.BorderSizePixel = 0
         Color_ElementRed.Size = UDim2.new(0, 60, 1, 0)
+        local red_corner = Instance.new("UICorner")
+        red_corner.CornerRadius = UDim.new(0, 6)
+        red_corner.Parent = Color_ElementRed
 
         Color_ElementRedTextInput.Name = "Color_ElementRedTextInput"
         Color_ElementRedTextInput.Parent = Color_ElementRed
@@ -791,11 +1056,11 @@ end
         Color_ElementRedTextInput.Position = UDim2.new(0.5, 0, 0.5, 0)
         Color_ElementRedTextInput.Size = UDim2.new(0, 25, 1, 0)
         Color_ElementRedTextInput.FontFace = GetFont()
-        Color_ElementRedTextInput.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+        Color_ElementRedTextInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 190)
         Color_ElementRedTextInput.PlaceholderText = "R:255"
         Color_ElementRedTextInput.Text = "R:255"
-        Color_ElementRedTextInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Color_ElementRedTextInput.TextSize = 17.000
+        Color_ElementRedTextInput.TextColor3 = Color3.fromRGB(240, 240, 250)
+        Color_ElementRedTextInput.TextSize = 16.000
 
         Color_ElementRedButtonInput.Name = "Color_ElementRedButtonInput"
         Color_ElementRedButtonInput.Parent = Color_ElementRed
@@ -807,11 +1072,15 @@ end
         Color_ElementRedButtonInput.TextColor3 = Color3.fromRGB(0, 0, 0)
         Color_ElementRedButtonInput.TextSize = 14.000
 
+        -- Green
         Color_ElementGreen.Name = "Color_ElementGreen"
         Color_ElementGreen.Parent = Color_Element
-        Color_ElementGreen.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Color_ElementGreen.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Color_ElementGreen.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        Color_ElementGreen.BorderSizePixel = 0
         Color_ElementGreen.Size = UDim2.new(0, 60, 1, 0)
+        local green_corner = Instance.new("UICorner")
+        green_corner.CornerRadius = UDim.new(0, 6)
+        green_corner.Parent = Color_ElementGreen
 
         Color_ElementGreenTextInput.Name = "Color_ElementGreenTextInput"
         Color_ElementGreenTextInput.Parent = Color_ElementGreen
@@ -821,11 +1090,11 @@ end
         Color_ElementGreenTextInput.Position = UDim2.new(0.5, 0, 0.5, 0)
         Color_ElementGreenTextInput.Size = UDim2.new(0, 25, 1, 0)
         Color_ElementGreenTextInput.FontFace = GetFont()
-        Color_ElementGreenTextInput.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+        Color_ElementGreenTextInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 190)
         Color_ElementGreenTextInput.PlaceholderText = "G:255"
         Color_ElementGreenTextInput.Text = "G:255"
-        Color_ElementGreenTextInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Color_ElementGreenTextInput.TextSize = 17.000
+        Color_ElementGreenTextInput.TextColor3 = Color3.fromRGB(240, 240, 250)
+        Color_ElementGreenTextInput.TextSize = 16.000
 
         Color_ElementGreenButtonInput.Name = "Color_ElementGreenButtonInput"
         Color_ElementGreenButtonInput.Parent = Color_ElementGreen
@@ -837,11 +1106,15 @@ end
         Color_ElementGreenButtonInput.TextColor3 = Color3.fromRGB(0, 0, 0)
         Color_ElementGreenButtonInput.TextSize = 14.000
 
+        -- Blue
         Color_ElementBlue.Name = "Color_ElementBlue"
         Color_ElementBlue.Parent = Color_Element
-        Color_ElementBlue.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-        Color_ElementBlue.BorderColor3 = Color3.fromRGB(74, 74, 83)
+        Color_ElementBlue.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+        Color_ElementBlue.BorderSizePixel = 0
         Color_ElementBlue.Size = UDim2.new(0, 60, 1, 0)
+        local blue_corner = Instance.new("UICorner")
+        blue_corner.CornerRadius = UDim.new(0, 6)
+        blue_corner.Parent = Color_ElementBlue
 
         Color_ElementBlueTextInput.Name = "Color_ElementBlueTextInput"
         Color_ElementBlueTextInput.Parent = Color_ElementBlue
@@ -851,11 +1124,11 @@ end
         Color_ElementBlueTextInput.Position = UDim2.new(0.5, 0, 0.5, 0)
         Color_ElementBlueTextInput.Size = UDim2.new(0, 25, 1, 0)
         Color_ElementBlueTextInput.FontFace = GetFont()
-        Color_ElementBlueTextInput.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+        Color_ElementBlueTextInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 190)
         Color_ElementBlueTextInput.PlaceholderText = "B:255"
         Color_ElementBlueTextInput.Text = "B:255"
-        Color_ElementBlueTextInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Color_ElementBlueTextInput.TextSize = 17.000
+        Color_ElementBlueTextInput.TextColor3 = Color3.fromRGB(240, 240, 250)
+        Color_ElementBlueTextInput.TextSize = 16.000
 
         Color_ElementBlueButtonInput.Name = "Color_ElementBlueButtonInput"
         Color_ElementBlueButtonInput.Parent = Color_ElementBlue
@@ -870,22 +1143,24 @@ end
         Color_ElementDisplay.Name = "Color_ElementDisplay"
         Color_ElementDisplay.Parent = Color_Element
         Color_ElementDisplay.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Color_ElementDisplay.BorderColor3 = Color3.fromRGB(74, 74, 83)
-        Color_ElementDisplay.Size = UDim2.new(0, 23, 0, 23)
+        Color_ElementDisplay.BorderSizePixel = 0
+        Color_ElementDisplay.Size = UDim2.new(0, 26, 0, 26)
+        local display_corner = Instance.new("UICorner")
+        display_corner.CornerRadius = UDim.new(0, 6)
+        display_corner.Parent = Color_ElementDisplay
 
         Color_ElementName.Name = "Color_ElementName"
         Color_ElementName.Parent = Color_Element
         Color_ElementName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Color_ElementName.BackgroundTransparency = 1.000
         Color_ElementName.Position = UDim2.new(2.21000075, 0, 0, 0)
-        Color_ElementName.Size = UDim2.new(1, 0, 0, 23)
+        Color_ElementName.Size = UDim2.new(1, 0, 0, 26)
         Color_ElementName.FontFace = GetFont()
         Color_ElementName.Text = ColorPickerName
-        Color_ElementName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Color_ElementName.TextColor3 = Color3.fromRGB(240, 240, 250)
         Color_ElementName.TextSize = 17.000
         Color_ElementName.TextXAlignment = Enum.TextXAlignment.Left
 
-        local UIS = game:GetService("UserInputService")
         local CurrentColor = ColorPickerArgs.DefaultColor or Color3.fromRGB(255, 255, 255)
 
         local R, G, B = CurrentColor.R, CurrentColor.G, CurrentColor.B;
@@ -897,7 +1172,6 @@ end
 
         local function updateColor()
             CurrentColor = Color3.fromRGB(R, G, B)
-
             setColor()
         end
 
@@ -910,8 +1184,8 @@ end
         for _, colorButton in pairs(Color_Element:GetDescendants()) do
             if colorButton:IsA("TextButton") then
                 colorButton.MouseButton1Down:Connect(function()
-                    while UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                        local x = math.clamp(UIS:GetMouseLocation().X - colorButton.AbsolutePosition.X, 0, colorButton.AbsoluteSize.X)
+                    while UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+                        local x = math.clamp(UserInputService:GetMouseLocation().X - colorButton.AbsolutePosition.X, 0, colorButton.AbsoluteSize.X)
                         local value = math.floor(x / colorButton.AbsoluteSize.X * 255 + 0.5)
                         local color = string.sub(colorButton.Name, 14, 14)
 
@@ -945,7 +1219,7 @@ end
         Radio_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Radio_Element.BackgroundTransparency = 1.000
         Radio_Element.Position = UDim2.new(0, 0, 0.49666667, 0)
-        Radio_Element.Size = UDim2.new(1, 0, 0, 23)
+        Radio_Element.Size = UDim2.new(1, 0, 0, 26)
 
         Radio_ElementLayout.Name = "Radio_ElementLayout"
         Radio_ElementLayout.Parent = Radio_Element
@@ -972,7 +1246,7 @@ end
             Radio_Element.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             Radio_Element.BackgroundTransparency = 1.000
             Radio_Element.Position = UDim2.new(0, 0, 0.49666667, 0)
-            Radio_Element.Size = UDim2.new(1, 0, 0, 23)
+            Radio_Element.Size = UDim2.new(1, 0, 0, 26)
 
             Radio_ElementItemName.Name = "Radio_ElementItemName"
             Radio_ElementItemName.Parent = Radio_ElementItem
@@ -982,7 +1256,7 @@ end
             Radio_ElementItemName.Size = UDim2.new(0.644999981, 0, 1, 0)
             Radio_ElementItemName.FontFace = GetFont()
             Radio_ElementItemName.Text = radio
-            Radio_ElementItemName.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Radio_ElementItemName.TextColor3 = Color3.fromRGB(240, 240, 250)
             Radio_ElementItemName.TextSize = 17.000
             Radio_ElementItemName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -996,7 +1270,7 @@ end
             Radio_ElementItem.Parent = Radio_Element
             Radio_ElementItem.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
             Radio_ElementItem.BackgroundTransparency = 1.000
-            Radio_ElementItem.Size = UDim2.new(0, 23 + (Radio_ElementItemName.TextBounds.X) + 7, 1, 0)
+            Radio_ElementItem.Size = UDim2.new(0, 26 + (Radio_ElementItemName.TextBounds.X) + 7, 1, 0)
 
             Radio_ElementItemLayout.Name = "Radio_ElementItemLayout"
             Radio_ElementItemLayout.Parent = Radio_ElementItem
@@ -1007,8 +1281,9 @@ end
 
             Radio_ElementItemButton.Name = "Radio_ElementItemButton"
             Radio_ElementItemButton.Parent = Radio_ElementItem
-            Radio_ElementItemButton.BackgroundColor3 = Color3.fromRGB(41, 74, 122)
-            Radio_ElementItemButton.Size = UDim2.new(0, 18, 0, 18)
+            Radio_ElementItemButton.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+            Radio_ElementItemButton.BorderSizePixel = 0
+            Radio_ElementItemButton.Size = UDim2.new(0, 20, 0, 20)
 
             Radio_ElementItemButtonCorner.CornerRadius = UDim.new(1, 0)
             Radio_ElementItemButtonCorner.Name = "Radio_ElementItemButtonCorner"
@@ -1017,9 +1292,10 @@ end
             Radio_ElementItemButtonState.Name = "Radio_ElementItemButtonState"
             Radio_ElementItemButtonState.Parent = Radio_ElementItemButton
             Radio_ElementItemButtonState.AnchorPoint = Vector2.new(0.5, 0.5)
-            Radio_ElementItemButtonState.BackgroundColor3 = Color3.fromRGB(66, 120, 196)
+            Radio_ElementItemButtonState.BackgroundColor3 = Color3.fromRGB(120, 140, 255)
+            Radio_ElementItemButtonState.BorderSizePixel = 0
             Radio_ElementItemButtonState.Position = UDim2.new(0.5, 0, 0.5, 0)
-            Radio_ElementItemButtonState.Size = UDim2.new(0, 14, 0, 14)
+            Radio_ElementItemButtonState.Size = UDim2.new(0, 12, 0, 12)
 
             Radio_ElementItemButtonStateCorner.CornerRadius = UDim.new(1, 0)
             Radio_ElementItemButtonStateCorner.Name = "Radio_ElementItemButtonStateCorner"
@@ -1034,6 +1310,7 @@ end
             Radio_ElementItemButtonInput.Text = ""
             Radio_ElementItemButtonInput.TextColor3 = Color3.fromRGB(0, 0, 0)
             Radio_ElementItemButtonInput.TextSize = 14.000
+            Radio_ElementItemButtonInput.AutoButtonColor = false
 
             if radio == Default then 
                 RadioEnabled = true
@@ -1058,12 +1335,12 @@ end
             end
 
             Radio_ElementItemButtonInput.MouseButton1Click:Connect(function()
-                if not radioButton.Enabled then  -- only do something if the button is not already selected
+                if not radioButton.Enabled then
                     radioButton.Enabled = true
                     radioButton.Update()
                     pcall(RadioButtonsArgs.OnChanged, radioButton.Name, radioButton.Enabled)
                     for _, rad in pairs(RadioButtons) do 
-                        if rad ~= radioButton then  -- deselect other buttons
+                        if rad ~= radioButton then
                             rad.Enabled = false
                             rad.Update()
                         end
@@ -1073,86 +1350,7 @@ end
 
             table.insert(RadioButtons, radioButton)
         end
-        
     end
-
-            
-function ElementHandler:PatternBackground(Args) 
-    local Container = Instance.new("Frame")
-    local Display = Instance.new("Frame")
-
-    local Value = 0
-    local Pattern = Args.Pattern or "ZigZag"
-    local Speed = Args.Speed or 0.1
-    local Thickness = Args.Thickness or 2
-    local Color = Args.Color or Color3.new(1, 1, 1)
-    local Frequency = Args.Frequency or 2
-    local MaxHeight = Args.MaxHeight or 50
-
-    Container.Name = "PatternBG"
-    Container.Parent = Window 
-    Container.BackgroundTransparency = 1.000
-    Container.Position = UDim2.new(0, 0, 0, 0)
-    Container.Size = UDim2.new(1, 0, 1, 0)
-    Container.ZIndex = -1 
-
-    Display.Name = "PatternDisplay"
-    Display.Parent = Container
-    Display.BackgroundColor3 = Color3.fromRGB(26, 15, 46) 
-    Display.BackgroundTransparency = 0.763
-    Display.BorderSizePixel = 0
-    Display.Size = UDim2.new(1, 0, 1, 0)
-    Display.ClipsDescendants = true
-
-    local trail = Instance.new("Folder")
-    trail.Parent = Display
-    
-    local points = {}
-    for i = 1, 100 do
-        local point = Instance.new("Frame")
-        point.Size = UDim2.new(0, Thickness, 0, Thickness)
-        point.BackgroundColor3 = Color 
-        point.BorderSizePixel = 0
-        point.ZIndex = 0 
-        point.Parent = trail
-        points[i] = point
-    end
-
-    local function getPatternValue(x, t)
-        local pos = (x * Frequency) + t
-        if Pattern == "ZigZag" then
-            return math.abs(pos % 2 - 1) * 2 - 1
-        elseif Pattern == "Square" then
-            return math.sin(pos * math.pi) > 0 and 1 or -1
-        elseif Pattern == "Sawtooth" then
-            return (pos % 1) * 2 - 1
-        elseif Pattern == "Chaos" then
-            return math.sin(pos) * math.cos(pos * 0.5) * math.sin(pos * 2)
-        else
-            return math.sin(pos * math.pi)
-        end
-    end
-
-    local function update(val)
-        local h = Display.AbsoluteSize.Y
-        for i, p in ipairs(points) do
-            local rx = i / #points
-            local calc = getPatternValue(rx, val)
-            local y = (calc * (MaxHeight / 2)) + (h / 2)
-            p.Position = UDim2.new(rx, 0, 0, y)
-        end
-    end
-
-    task.spawn(function()
-        while true do
-            Value = Value + Speed
-            update(Value)
-            task.wait(0.03)
-        end
-    end)
-end
-
-            
 
     function ElementHandler:BeginMenuBar() 
         local MenuBar = Instance.new("Frame")
@@ -1160,10 +1358,10 @@ end
 
         MenuBar.Name = "MenuBar"
         MenuBar.Parent = WindowElementContainer
-        MenuBar.BackgroundColor3 = Color3.fromRGB(44, 46, 48)
+        MenuBar.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
         MenuBar.BorderColor3 = Color3.fromRGB(74, 74, 83)
         MenuBar.Position = UDim2.new(-0.048780486, 0, 0.0417362265, 0)
-        MenuBar.Size = UDim2.new(1, 0, 0, 23)
+        MenuBar.Size = UDim2.new(1, 0, 0, 26)
 
         MenuBarLayout.Name = "MenuBarLayout"
         MenuBarLayout.Parent = MenuBar
@@ -1177,13 +1375,14 @@ end
 
             MenuBarItem.Name = MenuName
             MenuBarItem.Parent = MenuBar
-            MenuBarItem.BackgroundColor3 = Color3.fromRGB(44, 46, 48)
+            MenuBarItem.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
             MenuBarItem.BorderSizePixel = 0
             MenuBarItem.Size = UDim2.new(0, (MenuBarItem.TextBounds.X + 5), 1, 0)
             MenuBarItem.FontFace = GetFont()
             MenuBarItem.Text = MenuName
-            MenuBarItem.TextColor3 = Color3.fromRGB(255, 255, 255)
+            MenuBarItem.TextColor3 = Color3.fromRGB(240, 240, 250)
             MenuBarItem.TextSize = 17.000
+            MenuBarItem.AutoButtonColor = false
 
             local Open = false
 
@@ -1192,7 +1391,6 @@ end
             end)
 
             function ElementHandler:MenuItem(ItemProperties) 
-
                 local MenuBarItem_Items = Instance.new("Frame")
                 local MenuBarItem_Items_2 = Instance.new("UIListLayout")
                 local MenuBarItem_Items_ItemMain = Instance.new("TextButton")
@@ -1202,11 +1400,11 @@ end
 
                 MenuBarItem_Items.Name = "MenuBarItem_Items"
                 MenuBarItem_Items.Parent = MenuBar:FindFirstChild(ItemProperties.Menu)
-                MenuBarItem_Items.BackgroundColor3 = Color3.fromRGB(25, 26, 27)
+                MenuBarItem_Items.BackgroundColor3 = Color3.fromRGB(20, 25, 30)
                 MenuBarItem_Items.BackgroundTransparency = 0.050
                 MenuBarItem_Items.BorderColor3 = Color3.fromRGB(74, 74, 83)
                 MenuBarItem_Items.Position = UDim2.new(0, 0, 1, 1)
-                MenuBarItem_Items.Size = UDim2.new(0, 100, 0, 23)
+                MenuBarItem_Items.Size = UDim2.new(0, 100, 0, 26)
                 MenuBarItem_Items.Visible = Open
 
                 local function Update() 
@@ -1221,12 +1419,13 @@ end
                 MenuBarItem_Items_ItemMain.Parent = MenuBarItem_Items
                 MenuBarItem_Items_ItemMain.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 MenuBarItem_Items_ItemMain.BackgroundTransparency = 1.000
-                MenuBarItem_Items_ItemMain.Size = UDim2.new(1, 0, 0, 20)
+                MenuBarItem_Items_ItemMain.Size = UDim2.new(1, 0, 0, 23)
                 MenuBarItem_Items_ItemMain.FontFace = GetFont()
                 MenuBarItem_Items_ItemMain.Text = ItemProperties.Name
-                MenuBarItem_Items_ItemMain.TextColor3 = Color3.fromRGB(255, 255, 255)
+                MenuBarItem_Items_ItemMain.TextColor3 = Color3.fromRGB(240, 240, 250)
                 MenuBarItem_Items_ItemMain.TextSize = 16.000
                 MenuBarItem_Items_ItemMain.TextXAlignment = Enum.TextXAlignment.Left
+                MenuBarItem_Items_ItemMain.AutoButtonColor = false
 
                 MenuBarItem_Items_ItemMainPadding.Name = "MenuBarItem_Items_ItemMainPadding"
                 MenuBarItem_Items_ItemMainPadding.Parent = MenuBarItem_Items_ItemMain
@@ -1255,18 +1454,55 @@ end
         end
     end
 
-    local TweenService = game:GetService("TweenService")
-    local UserInputService = game:GetService("UserInputService")
+    -- Window dragging
+    local dragging = false
+    local dragInput = nil
+    local dragStart = nil
+    local startPos = nil
     
+    local function updateDrag(input)
+        local delta = input.Position - dragStart
+        local newPosition = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    
+        local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(Window, tweenInfo, { Position = newPosition })
+        tween:Play()
+    end
+    
+    WindowPanel.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = Window.Position
+    
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    WindowPanel.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            updateDrag(input)
+        end
+    end)
+
+    -- Window resizing
     local selected = false
-    local window = Window
-    local corner = ResizeAll
     local debounce = false
     
     local function updateInitialPosition()
-        local initialPosition = UDim2.new(1, -(corner.AbsoluteSize.X - 10), 1, -(corner.AbsoluteSize.Y - 10) + 0.1)
+        local initialPosition = UDim2.new(1, -(ResizeAll.AbsoluteSize.X - 10), 1, -(ResizeAll.AbsoluteSize.Y - 10) + 0.1)
         local tweenInfo = TweenInfo.new(0.01, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        local initTween = TweenService:Create(corner, tweenInfo, {
+        local initTween = TweenService:Create(ResizeAll, tweenInfo, {
             Position = initialPosition
         })
         initTween:Play()
@@ -1280,16 +1516,16 @@ end
         debounce = true
     
         local mousePos = UserInputService:GetMouseLocation()
-        local windowLeft = window.AbsolutePosition.X
-        local windowTop = window.AbsolutePosition.Y
-        local cornerWidth = corner.AbsoluteSize.X
-        local cornerHeight = corner.AbsoluteSize.Y
+        local windowLeft = Window.AbsolutePosition.X
+        local windowTop = Window.AbsolutePosition.Y
+        local cornerWidth = ResizeAll.AbsoluteSize.X
+        local cornerHeight = ResizeAll.AbsoluteSize.Y
     
         local newWidth = math.max((mousePos.X - windowLeft + (cornerWidth / 2)), 35)
         local newHeight = math.max(((mousePos.Y - windowTop + (cornerHeight / 2)) - 35), 35)
     
         local tweenInfo = TweenInfo.new(0.01, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        local resizeTween = TweenService:Create(window, tweenInfo, {
+        local resizeTween = TweenService:Create(Window, tweenInfo, {
             Size = UDim2.new(0, newWidth, 0, newHeight)
         })
         resizeTween:Play()
@@ -1299,7 +1535,7 @@ end
         debounce = false
     end
     
-    corner.MouseButton1Down:Connect(function()
+    ResizeAll.MouseButton1Down:Connect(function()
         selected = true
         ResizeWindow()
     end)
@@ -1316,55 +1552,8 @@ end
         end
     end)
     
-    window:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+    Window:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
         updateInitialPosition()
-    end)
-
-    
-    local TweenService = game:GetService("TweenService")
-    local UserInputService = game:GetService("UserInputService")
-    
-    local window = Window
-    local topPanel = WindowPanel
-    
-    local dragging = false
-    local dragInput = nil
-    local dragStart = nil
-    local startPos = nil
-    
-    local function updateDrag(input)
-        local delta = input.Position - dragStart
-        local newPosition = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    
-        local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        local tween = TweenService:Create(window, tweenInfo, { Position = newPosition })
-        tween:Play()
-    end
-    
-    topPanel.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = window.Position
-    
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-    
-    topPanel.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            updateDrag(input)
-        end
     end)
 
     local showing = true
@@ -1379,10 +1568,9 @@ end
         else
             WindowElementContainer.Visible = true
             WindowPanelIcon.ImageTransparency = 0
-            Window.BackgroundTransparency = 0.05
+            Window.BackgroundTransparency = 0.1
             ResizeAll.Visible = true
         end
-        
     end)
     
     function ElementHandler:End()
@@ -1398,12 +1586,11 @@ end
                 MinimiseButtonIcon.Rotation = 180
             else
                 WindowElementContainer.Visible = true
-                WindowPanelIcon.ImageTransparency = 0
-                Window.BackgroundTransparency = 0.05
+                WindowPanelIcon.ImageTransparency = 0.85
+                Window.BackgroundTransparency = 0.1
                 ResizeAll.Visible = true
                 MinimiseButtonIcon.Rotation = 0
             end
-            
         end)
 
         Window:GetPropertyChangedSignal("Size"):Connect(function()
@@ -1428,7 +1615,7 @@ end
 
         UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
             if input.KeyCode.Name == "RightBracket" then
-                if syn.protect_gui then
+                if syn and syn.protect_gui then
                     syn.unprotect_gui(ImGui)
                     ImGui:Destroy()
                 elseif gethui then
