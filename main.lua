@@ -268,8 +268,9 @@ local bgCorner = Instance.new("UICorner")
 bgCorner.CornerRadius = UDim.new(0, 8)
 bgCorner.Parent = BackgroundContainer
 
-local nodeCount = 60 
+local nodeCount = 70 
 local nodeSize = 4   
+local lineMaxDist = 0.15
 local nodes = {}
 local lineCache = {}
 local activeLines = 0
@@ -284,7 +285,7 @@ local function getLine(container)
     local line = Instance.new("Frame")
     line.Name = "ConnectionLine"
     line.BorderSizePixel = 0
-    line.BackgroundColor3 = Color3.fromRGB(130, 50, 255)
+    line.BackgroundColor3 = Color3.new(1, 1, 1)
     line.AnchorPoint = Vector2.new(0.5, 0.5)
     line.ZIndex = -9
     line.Parent = container
@@ -353,6 +354,22 @@ RunService.RenderStepped:Connect(function()
         else
             n1.frame.BackgroundTransparency = 0.4
             n1.frame.BackgroundColor3 = Color3.new(1, 1, 1)
+        end
+
+        for j = i + 1, #nodes do
+            local n2 = nodes[j]
+            local dist = (n1.pos - n2.pos).Magnitude
+            if dist < lineMaxDist then
+                local line = getLine(BackgroundContainer)
+                local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
+                local p2 = Vector2.new(n2.pos.X * size.X, n2.pos.Y * size.Y)
+                
+                line.BackgroundColor3 = Color3.new(1, 1, 1)
+                line.BackgroundTransparency = 0.8 + (dist / lineMaxDist) * 0.2
+                line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 0.5)
+                line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
+                line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
+            end
         end
     end
 end)
