@@ -261,161 +261,103 @@ local BackgroundContainer = Instance.new("Frame")
     BackgroundContainer.ZIndex = -10
     BackgroundContainer.ClipsDescendants = true
 
-    local GradientBG = Instance.new("Frame")
-    GradientBG.Name = "GradientBG"
-    GradientBG.Parent = BackgroundContainer
-    GradientBG.Size = UDim2.new(1.5, 0, 1.5, 0)
-    GradientBG.Position = UDim2.new(-0.25, 0, -0.25, 0)
-    GradientBG.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    GradientBG.BackgroundTransparency = 0.5
-    GradientBG.ZIndex = -10
+    local nodeCount = 40
+    local lineMaxDist = 0.15
+    local nodeSpeed = 0.0008
+    local nodes = {}
+    local lineCache = {}
+    local activeLines = 0
 
-    local Gradient = Instance.new("UIGradient")
-    Gradient.Parent = GradientBG
-    Gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 50)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 30, 80)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 50, 70))
-    })
-    Gradient.Rotation = 45
+    local function getLine(container)
+        activeLines = activeLines + 1
+        if lineCache[activeLines] then
+            lineCache[activeLines].Visible = true
+            return lineCache[activeLines]
+        end
+
+        local line = Instance.new("Frame")
+        line.Name = "ConnectionLine"
+        line.BorderSizePixel = 0
+        line.BackgroundColor3 = Color3.new(1, 1, 1)
+        line.AnchorPoint = Vector2.new(0.5, 0.5)
+        line.ZIndex = -9
+        line.Parent = container
+        table.insert(lineCache, line)
+        return line
+    end
+
+    for i = 1, nodeCount do
+        local node = Instance.new("Frame")
+        node.Size = UDim2.new(0, 3, 0, 3)
+        node.BackgroundColor3 = Color3.new(1, 1, 1)
+        node.BackgroundTransparency = 0.2
+        node.BorderSizePixel = 0
+        node.Parent = BackgroundContainer
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = node
+
+        nodes[i] = {
+            frame = node,
+            pos = Vector2.new(math.random(), math.random()),
+            vel = Vector2.new(math.random(-10, 10) * nodeSpeed, math.random(-10, 10) * nodeSpeed)
+        }
+    end
 
     local UserInputService = game:GetService("UserInputService")
     local RunService = game:GetService("RunService")
-    
-    local mouseX, mouseY = 0.5, 0.5
-    
+
     RunService.RenderStepped:Connect(function()
+        if not Window.Visible then return end
+        local size = BackgroundContainer.AbsoluteSize
         local mousePos = UserInputService:GetMouseLocation()
         local windowPos = Window.AbsolutePosition
-        local windowSize = Window.AbsoluteSize
         
-        mouseX = math.clamp((mousePos.X - windowPos.X) / windowSize.X, 0, 1)
-        mouseY = math.clamp((mousePos.Y - windowPos.Y) / windowSize.Y, 0, 1)
-        
-        local targetRotation = 45 + (mouseX - 0.5) * 90
-        Gradient.Rotation = Gradient.Rotation + (targetRotation - Gradient.Rotation) * 0.05
-        
-        local offsetX = (mouseX - 0.5) * 0.3
-        local offsetY = (mouseY - 0.5) * 0.3
-        GradientBG.Position = UDim2.new(-0.25 + offsetX, 0, -0.25 + offsetY, 0)
-    end)
+        local mX = (mousePos.X - windowPos.X) / size.X
+        local mY = (mousePos.Y - windowPos.Y) / size.Y
+        local mouseVec = Vector2.new(mX, mY)
 
-    local function CreateEnhancedPatterns()
-        local Layer1 = Instance.new("Frame")
-        Layer1.Name = "PatternLayer1"
-        Layer1.Parent = BackgroundContainer
-        Layer1.BackgroundTransparency = 1
-        Layer1.Size = UDim2.new(1, 0, 1, 0)
-        Layer1.ZIndex = -9
-        Layer1.ClipsDescendants = true
-        
-        local points1 = {}
-        for i = 1, 150 do
-            local point = Instance.new("Frame")
-            point.Size = UDim2.new(0, 2, 0, 2)
-            point.BackgroundColor3 = Color3.fromRGB(120, 140, 255)
-            point.BackgroundTransparency = 0.3
-            point.BorderSizePixel = 0
-            point.ZIndex = -9
+        activeLines = 0
+        for _, l in ipairs(lineCache) do l.Visible = false end
+
+        for i, n1 in ipairs(nodes) do
+            n1.pos = n1.pos + n1.vel
+            if n1.pos.X < 0 or n1.pos.X > 1 then n1.vel = Vector2.new(-n1.vel.X, n1.vel.Y) end
+            if n1.pos.Y < 0 or n1.pos.Y > 1 then n1.vel = Vector2.new(n1.vel.X, -n1.vel.Y) end
             
-            local glow = Instance.new("UIStroke")
-            glow.Parent = point
-            glow.Color = Color3.fromRGB(120, 140, 255)
-            glow.Thickness = 1
-            glow.Transparency = 0.7
-            
-            point.Parent = Layer1
-            points1[i] = point
-        end
-        
-        local Layer2 = Instance.new("Frame")
-        Layer2.Name = "PatternLayer2"
-        Layer2.Parent = BackgroundContainer
-        Layer2.BackgroundTransparency = 1
-        Layer2.Size = UDim2.new(1, 0, 1, 0)
-        Layer2.ZIndex = -8
-        Layer2.ClipsDescendants = true
-        
-        local points2 = {}
-        for i = 1, 100 do
-            local point = Instance.new("Frame")
-            point.Size = UDim2.new(0, 3, 0, 3)
-            point.BackgroundColor3 = Color3.fromRGB(255, 100, 180)
-            point.BackgroundTransparency = 0.5
-            point.BorderSizePixel = 0
-            point.ZIndex = -8
-            
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(1, 0)
-            corner.Parent = point
-            
-            point.Parent = Layer2
-            points2[i] = point
-        end
-        
-        local Layer3 = Instance.new("Frame")
-        Layer3.Name = "PatternLayer3"
-        Layer3.Parent = BackgroundContainer
-        Layer3.BackgroundTransparency = 1
-        Layer3.Size = UDim2.new(1, 0, 1, 0)
-        Layer3.ZIndex = -7
-        Layer3.ClipsDescendants = true
-        
-        local particles = {}
-        for i = 1, 30 do
-            local particle = Instance.new("Frame")
-            particle.Size = UDim2.new(0, math.random(2, 5), 0, math.random(2, 5))
-            particle.BackgroundColor3 = Color3.fromRGB(200, 200, 255)
-            particle.BackgroundTransparency = math.random(60, 85) / 100
-            particle.BorderSizePixel = 0
-            particle.ZIndex = -7
-            
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(1, 0)
-            corner.Parent = particle
-            
-            particle.Parent = Layer3
-            particles[i] = {
-                frame = particle,
-                speedX = math.random(-50, 50) / 1000,
-                speedY = math.random(-50, 50) / 1000,
-                x = math.random(0, 100) / 100,
-                y = math.random(0, 100) / 100
-            }
-        end
-        
-        local time = 0
-        RunService.RenderStepped:Connect(function(dt)
-            time = time + dt
-            local h = Layer1.AbsoluteSize.Y
-            
-            for i, p in ipairs(points1) do
-                local rx = (i / #points1)
-                local mouseInfluence = math.abs(rx - mouseX) < 0.2 and (0.2 - math.abs(rx - mouseX)) * 5 or 0
-                local calc = math.sin((rx * 8 + time * 2 + mouseX * 2) * math.pi) * (1 + mouseInfluence)
-                local y = (calc * 40) + (h / 2) + (mouseY - 0.5) * 30
-                p.Position = UDim2.new(rx, 0, 0, y)
+            n1.frame.Position = UDim2.new(n1.pos.X, 0, n1.pos.Y, 0)
+
+            local mDist = (n1.pos - mouseVec).Magnitude
+            if mDist < 0.2 then
+                local line = getLine(BackgroundContainer)
+                local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
+                local p2 = Vector2.new(mouseVec.X * size.X, mouseVec.Y * size.Y)
                 
-                local hue = (time * 0.1 + rx) % 1
-                p.BackgroundColor3 = Color3.fromHSV(hue * 0.3 + 0.5, 0.6, 1)
+                line.BackgroundColor3 = Color3.fromRGB(150, 100, 255)
+                line.BackgroundTransparency = 0.4 + (mDist / 0.2) * 0.6
+                line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1)
+                line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
+                line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
             end
-            
-            for i, p in ipairs(points2) do
-                local rx = (i / #points2)
-                local calc = math.sin((rx * 6 - time * 1.5) * math.pi) * math.cos((rx * 3 + mouseY) * math.pi)
-                local y = (calc * 30) + (h / 2) + (mouseX - 0.5) * 40
-                p.Position = UDim2.new(rx, 0, 0, y)
+
+            for j = i + 1, #nodes do
+                local n2 = nodes[j]
+                local dist = (n1.pos - n2.pos).Magnitude
+                if dist < lineMaxDist then
+                    local line = getLine(BackgroundContainer)
+                    local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
+                    local p2 = Vector2.new(n2.pos.X * size.X, n2.pos.Y * size.Y)
+                    
+                    line.BackgroundColor3 = Color3.new(1, 1, 1)
+                    line.BackgroundTransparency = 0.6 + (dist / lineMaxDist) * 0.4
+                    line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1)
+                    line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
+                    line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
+                end
             end
-            
-            for i, data in ipairs(particles) do
-                data.x = (data.x + data.speedX + (mouseX - 0.5) * 0.001) % 1
-                data.y = (data.y + data.speedY + (mouseY - 0.5) * 0.001) % 1
-                data.frame.Position = UDim2.new(data.x, 0, data.y, 0)
-            end
-        end)
-    end
-    
-    CreateEnhancedPatterns()
+        end
+    end)
 
     
     local ElementHandler = {}
