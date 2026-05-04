@@ -252,8 +252,8 @@ function main:Begin(PROPS)
     AWindowSep.Position = UDim2.new(0.00609756075, 0, 0, 0)
     AWindowSep.Size = UDim2.new(0, 567, 0, 30)
 
--- ENHANCED BACKGROUND SYSTEM
-    local BackgroundContainer = Instance.new("Frame")
+-- skiddie diddy 
+local BackgroundContainer = Instance.new("Frame")
     BackgroundContainer.Name = "BackgroundContainer"
     BackgroundContainer.Parent = Window
     BackgroundContainer.BackgroundTransparency = 1
@@ -261,14 +261,13 @@ function main:Begin(PROPS)
     BackgroundContainer.ZIndex = -10
     BackgroundContainer.ClipsDescendants = true
 
-    -- Gradient Background
     local GradientBG = Instance.new("Frame")
     GradientBG.Name = "GradientBG"
     GradientBG.Parent = BackgroundContainer
     GradientBG.Size = UDim2.new(1.5, 0, 1.5, 0)
     GradientBG.Position = UDim2.new(-0.25, 0, -0.25, 0)
     GradientBG.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    GradientBG.BackgroundTransparency = 0.5 -- Adjusted for transparency
+    GradientBG.BackgroundTransparency = 0.5
     GradientBG.ZIndex = -10
 
     local Gradient = Instance.new("UIGradient")
@@ -280,10 +279,8 @@ function main:Begin(PROPS)
     })
     Gradient.Rotation = 45
 
-    -- Mouse tracking for gradient
     local UserInputService = game:GetService("UserInputService")
     local RunService = game:GetService("RunService")
-    local TweenService = game:GetService("TweenService")
     
     local mouseX, mouseY = 0.5, 0.5
     
@@ -295,19 +292,15 @@ function main:Begin(PROPS)
         mouseX = math.clamp((mousePos.X - windowPos.X) / windowSize.X, 0, 1)
         mouseY = math.clamp((mousePos.Y - windowPos.Y) / windowSize.Y, 0, 1)
         
-        -- Smooth gradient rotation based on mouse
         local targetRotation = 45 + (mouseX - 0.5) * 90
         Gradient.Rotation = Gradient.Rotation + (targetRotation - Gradient.Rotation) * 0.05
         
-        -- Move gradient position
         local offsetX = (mouseX - 0.5) * 0.3
         local offsetY = (mouseY - 0.5) * 0.3
         GradientBG.Position = UDim2.new(-0.25 + offsetX, 0, -0.25 + offsetY, 0)
     end)
 
-    -- Enhanced Pattern Background System
     local function CreateEnhancedPatterns()
-        -- Layer 1: Main zigzag
         local Layer1 = Instance.new("Frame")
         Layer1.Name = "PatternLayer1"
         Layer1.Parent = BackgroundContainer
@@ -335,7 +328,6 @@ function main:Begin(PROPS)
             points1[i] = point
         end
         
-        -- Layer 2: Secondary pattern
         local Layer2 = Instance.new("Frame")
         Layer2.Name = "PatternLayer2"
         Layer2.Parent = BackgroundContainer
@@ -361,7 +353,6 @@ function main:Begin(PROPS)
             points2[i] = point
         end
         
-        -- Layer 3: Ambient particles
         local Layer3 = Instance.new("Frame")
         Layer3.Name = "PatternLayer3"
         Layer3.Parent = BackgroundContainer
@@ -397,9 +388,7 @@ function main:Begin(PROPS)
         RunService.RenderStepped:Connect(function(dt)
             time = time + dt
             local h = Layer1.AbsoluteSize.Y
-            local w = Layer1.AbsoluteSize.X
             
-            -- Update Layer 1 (main zigzag)
             for i, p in ipairs(points1) do
                 local rx = (i / #points1)
                 local mouseInfluence = math.abs(rx - mouseX) < 0.2 and (0.2 - math.abs(rx - mouseX)) * 5 or 0
@@ -407,12 +396,10 @@ function main:Begin(PROPS)
                 local y = (calc * 40) + (h / 2) + (mouseY - 0.5) * 30
                 p.Position = UDim2.new(rx, 0, 0, y)
                 
-                -- Color shift
                 local hue = (time * 0.1 + rx) % 1
                 p.BackgroundColor3 = Color3.fromHSV(hue * 0.3 + 0.5, 0.6, 1)
             end
             
-            -- Update Layer 2 (secondary wave)
             for i, p in ipairs(points2) do
                 local rx = (i / #points2)
                 local calc = math.sin((rx * 6 - time * 1.5) * math.pi) * math.cos((rx * 3 + mouseY) * math.pi)
@@ -420,7 +407,6 @@ function main:Begin(PROPS)
                 p.Position = UDim2.new(rx, 0, 0, y)
             end
             
-            -- Update Layer 3 (particles)
             for i, data in ipairs(particles) do
                 data.x = (data.x + data.speedX + (mouseX - 0.5) * 0.001) % 1
                 data.y = (data.y + data.speedY + (mouseY - 0.5) * 0.001) % 1
@@ -431,6 +417,7 @@ function main:Begin(PROPS)
     
     CreateEnhancedPatterns()
 
+    
     local ElementHandler = {}
 
     function ElementHandler:Text(TextDisplay) 
