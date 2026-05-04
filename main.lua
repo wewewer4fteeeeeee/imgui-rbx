@@ -954,8 +954,9 @@ function Window:soundyoo(config)
     sound_element.BackgroundTransparency = 1
     sound_element.Size = UDim2.new(1, 0, 0, 40)
 
+    -- Sound object needs to be where it can play
     sound_obj.SoundId = asset or ""
-    sound_obj.Parent = sound_element
+    sound_obj.Parent = game:GetService("SoundService") 
 
     play_btn.Parent = sound_element
     play_btn.Size = UDim2.new(0, 80, 0, 30)
@@ -965,6 +966,7 @@ function Window:soundyoo(config)
     play_btn.Text = "Play"
     play_btn.TextColor3 = Color3.new(1, 1, 1)
     play_btn.Font = Enum.Font.Code
+    play_btn.BorderSizePixel = 0
 
     stop_btn.Parent = sound_element
     stop_btn.Size = UDim2.new(0, 80, 0, 30)
@@ -974,9 +976,15 @@ function Window:soundyoo(config)
     stop_btn.Text = "Stop"
     stop_btn.TextColor3 = Color3.new(1, 1, 1)
     stop_btn.Font = Enum.Font.Code
+    stop_btn.BorderSizePixel = 0
 
-    play_btn.MouseButton1Click:Connect(function() sound_obj:Play() end)
-    stop_btn.MouseButton1Click:Connect(function() sound_obj:Stop() end)
+    play_btn.MouseButton1Click:Connect(function() 
+        sound_obj:Play() 
+    end)
+    
+    stop_btn.MouseButton1Click:Connect(function() 
+        sound_obj:Stop() 
+    end)
 
     return sound_element
 end
