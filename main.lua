@@ -68,6 +68,33 @@ function main:Begin(PROPS)
         return Font.fromId(12187371840)
     end
 
+local function soundsupportyippie(url)
+    if not url or url == "" then return nil end
+    if not string.find(url, "http") then return url end
+
+    local filename = "sound_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".mp3"
+    
+    local success, data = pcall(function() 
+        return game:HttpGet(url) 
+    end)
+
+    if success and data then
+        writefile(filename, data)
+        return getcustomasset(filename)
+    end
+
+    return nil
+end
+
+local assetId = soundsupportyippie(PROPS.Sound)
+if assetId then
+    local s = Instance.new("Sound")
+    s.SoundId = assetId
+    s.Parent = game:GetService("SoundService")
+    s:Play()
+end
+
+    
     local function imagesuportyippie(url)
         if not url or url == "" then return nil end
         if not string.find(url, "http") then return url end
@@ -913,6 +940,67 @@ end)
         end)
     end
 
+function Window:soundyoo(config)
+    local haysound = config.haysound or ""
+    local asset = soundsupportyippie(haysound)
+    
+    local sound_element = Instance.new("Frame")
+    local play_btn = Instance.new("TextButton")
+    local stop_btn = Instance.new("TextButton")
+    local sound_obj = Instance.new("Sound")
+
+    sound_element.Name = "soundyoo_element"
+    sound_element.Parent = WindowElements
+    sound_element.BackgroundTransparency = 1
+    sound_element.Size = UDim2.new(1, 0, 0, 40)
+
+    sound_obj.SoundId = asset or ""
+    sound_obj.Parent = sound_element
+
+    play_btn.Parent = sound_element
+    play_btn.Size = UDim2.new(0, 80, 0, 30)
+    play_btn.Position = UDim2.new(0, 5, 0.5, 0)
+    play_btn.AnchorPoint = Vector2.new(0, 0.5)
+    play_btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    play_btn.Text = "Play"
+    play_btn.TextColor3 = Color3.new(1, 1, 1)
+    play_btn.Font = Enum.Font.Code
+
+    stop_btn.Parent = sound_element
+    stop_btn.Size = UDim2.new(0, 80, 0, 30)
+    stop_btn.Position = UDim2.new(0, 90, 0.5, 0)
+    stop_btn.AnchorPoint = Vector2.new(0, 0.5)
+    stop_btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    stop_btn.Text = "Stop"
+    stop_btn.TextColor3 = Color3.new(1, 1, 1)
+    stop_btn.Font = Enum.Font.Code
+
+    play_btn.MouseButton1Click:Connect(function() sound_obj:Play() end)
+    stop_btn.MouseButton1Click:Connect(function() sound_obj:Stop() end)
+
+    return sound_element
+end
+
+function Window:Button(config)
+    local name = config.Name or "Button"
+    local callback = config.Callback or function() end
+    
+    local btn_element = Instance.new("TextButton")
+    btn_element.Name = "button_element"
+    btn_element.Parent = WindowElements
+    btn_element.Size = UDim2.new(1, -10, 0, 30)
+    btn_element.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    btn_element.Text = name
+    btn_element.TextColor3 = Color3.new(1, 1, 1)
+    btn_element.Font = Enum.Font.Code
+    btn_element.TextSize = 14
+
+    btn_element.MouseButton1Click:Connect(callback)
+    
+    return btn_element
+end
+
+            
     function ElementHandler:imgyoo(config)
         local hayimg = config.hayimg or ""
         local asset = imagesuportyippie(hayimg)
