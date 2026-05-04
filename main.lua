@@ -14,35 +14,46 @@ function util:egg(stringx)
 end
 
 local main = {}
-local nodes = {}
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local nodeCount = 45
+local lineMaxDist = 0.15
+local nodeSpeed = 0.0006
+local BackgroundColor = Color3.new(1, 1, 1)
 local lineCache = {}
-local nodeCount = 50 
-local connectionDistance = 0.12 
 local activeLines = 0
-
-BackgroundContainer.BackgroundTransparency = 0.85
-BackgroundContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-
-local lineFolder = Instance.new("Folder")
-lineFolder.Name = "LineFolder"
-lineFolder.Parent = BackgroundContainer
-
+BackgroundContainer.BackgroundTransparency = 1
 local function getLine()
     activeLines = activeLines + 1
     if lineCache[activeLines] then
-        local line = lineCache[activeLines]
-        line.Visible = true
-        return line
+        lineCache[activeLines].Visible = true
+        return lineCache[activeLines]
     end
-
     local line = Instance.new("Frame")
     line.BorderSizePixel = 0
+    line.BackgroundColor3 = BackgroundColor
     line.AnchorPoint = Vector2.new(0.5, 0.5)
-    line.ZIndex = -9
-    line.Parent = lineFolder
-    
+    line.ZIndex = -10
+    line.Parent = BackgroundContainer
     table.insert(lineCache, line)
     return line
+end
+local nodes = {}
+for i = 1, nodeCount do
+    local node = Instance.new("Frame")
+    node.Size = UDim2.new(0, 2, 0, 2)
+    node.BackgroundColor3 = BackgroundColor
+    node.BorderSizePixel = 0
+    node.Parent = BackgroundContainer
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = node
+
+    nodes[i] = {
+        frame = node,
+        pos = Vector2.new(math.random(), math.random()),
+        vel = Vector2.new(math.random(-10, 10) * nodeSpeed, math.random(-10, 10) * nodeSpeed)
+    }
 end
 
 
@@ -110,180 +121,180 @@ function main:Begin(PROPS)
         return nil
     end
 
-    local ImGui = Instance.new("ScreenGui")
-    local Window = Instance.new("Frame")
-    local WindowCorner = Instance.new("UICorner")
-    local WindowStroke = Instance.new("UIStroke")
-    local WindowPanel = Instance.new("Frame")
-    local WindowPanelIcon = Instance.new("ImageLabel")
-    local MinimiseButton = Instance.new("TextButton")
-    local MinimiseButtonIcon = Instance.new("ImageLabel")
-    local WindowPanelIconPadding = Instance.new("UIPadding")
-    local WindowDisplayName = Instance.new("TextLabel")
-    local WindowDisplayNamePadding = Instance.new("UIPadding")
-    local ResizeAll = Instance.new("TextButton")
-    local ResizeAllIcon = Instance.new("ImageLabel")
-    local WindowElementContainer = Instance.new("Frame")
-    local WindowElements = Instance.new("ScrollingFrame")
-    local WindowElementsLayout = Instance.new("UIListLayout")
-    local WindowElementsPadding = Instance.new("UIPadding")
-    
-    local WindowElementsContainerLayout = Instance.new("UIListLayout")
-    local AWindowSep = Instance.new("Frame")
-
-    ImGui.Name = string.format("ImGui-%s", tostring(util:egg(tostring(game:GetService("Players").LocalPlayer.UserId))))
-    ImGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ImGui.ResetOnSpawn = false
-    SecureGui(ImGui)
-
-    Window.Name = "Window"
-    Window.Parent = ImGui
-    Window.Active = true
-    Window.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-    Window.BackgroundTransparency = 0.1
-    Window.ClipsDescendants = true
-    Window.Position = UDim2.new(0.283211678, 0, 0.155285195, 0)
-    Window.Selectable = true
-    Window.Size = UDim2.new(0, MenuOptions.Width, 0, MenuOptions.Height)
-
-    WindowCorner.CornerRadius = UDim.new(0, 12)
-    WindowCorner.Name = "WindowCorner"
-    WindowCorner.Parent = Window
-
-    WindowStroke.Name = "WindowStroke"
-    WindowStroke.Parent = Window
-    WindowStroke.Color = Color3.fromRGB(80, 80, 100)
-    WindowStroke.Thickness = 1.5
-    WindowStroke.Transparency = 0.5
-
-    WindowPanel.Name = "WindowPanel"
-    WindowPanel.Parent = Window
-    WindowPanel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    WindowPanel.BackgroundTransparency = 1.000
-    WindowPanel.Size = UDim2.new(1, 0, 0, 30)
-    WindowPanel.ZIndex = 2
-
-    WindowPanelIcon.Name = "WindowPanelIcon"
-    WindowPanelIcon.Parent = WindowPanel
-    WindowPanelIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-    WindowPanelIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    WindowPanelIcon.BackgroundTransparency = 1.000
-    WindowPanelIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-    WindowPanelIcon.Size = UDim2.new(0.999999881, 0, 1, 0)
-    WindowPanelIcon.ZIndex = 2
-    WindowPanelIcon.Image = "rbxassetid://13034670565"
-    WindowPanelIcon.ScaleType = Enum.ScaleType.Tile
-    WindowPanelIcon.ImageTransparency = 0.85
-
-    MinimiseButton.Name = "MinimiseButton"
-    MinimiseButton.Parent = WindowPanelIcon
-    MinimiseButton.AnchorPoint = Vector2.new(0.5, 0.5)
-    MinimiseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    MinimiseButton.BackgroundTransparency = 1.000
-    MinimiseButton.Position = UDim2.new(0, 13, 0.5, 0)
-    MinimiseButton.Size = UDim2.new(0.0452961661, 0, 1, 0)
-    MinimiseButton.FontFace = GetFont()
-    MinimiseButton.Text = ""
-    MinimiseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    MinimiseButton.TextSize = 14.000
-
-    MinimiseButtonIcon.Name = "MinimiseButtonIcon"
-    MinimiseButtonIcon.Parent = MinimiseButton
-    MinimiseButtonIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-    MinimiseButtonIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    MinimiseButtonIcon.BackgroundTransparency = 1.000
-    MinimiseButtonIcon.Position = UDim2.new(0.5, 0, 0.5, 2)
-    MinimiseButtonIcon.Size = UDim2.new(0, 12, 0, 12)
-    MinimiseButtonIcon.Image = "rbxassetid://13034875812"
-
-    WindowPanelIconPadding.Name = "WindowPanelIconPadding"
-    WindowPanelIconPadding.Parent = WindowPanelIcon
-    WindowPanelIconPadding.PaddingLeft = UDim.new(0, 2)
-
-    WindowDisplayName.Name = "WindowDisplayName"
-    WindowDisplayName.Parent = WindowPanelIcon
-    WindowDisplayName.AnchorPoint = Vector2.new(0.5, 0.5)
-    WindowDisplayName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    WindowDisplayName.BackgroundTransparency = 1.000
-    WindowDisplayName.Position = UDim2.new(0.5, 0, 0.5, 0)
-    WindowDisplayName.Size = UDim2.new(1, 0, 1, 0)
-    WindowDisplayName.FontFace = GetFont()
-    WindowDisplayName.Text = PROPS.Name
-    WindowDisplayName.TextColor3 = Color3.fromRGB(240, 240, 245)
-    WindowDisplayName.TextSize = 16.000
-    WindowDisplayName.TextXAlignment = Enum.TextXAlignment.Left
-
-    WindowDisplayNamePadding.Name = "WindowDisplayNamePadding"
-    WindowDisplayNamePadding.Parent = WindowDisplayName
-    WindowDisplayNamePadding.PaddingLeft = UDim.new(0, 30)
-
-    ResizeAll.Name = "ResizeAll"
-    ResizeAll.Parent = Window
-    ResizeAll.AnchorPoint = Vector2.new(0.5, 0.5)
-    ResizeAll.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ResizeAll.BackgroundTransparency = 1.000
-    ResizeAll.BorderSizePixel = 0
-    ResizeAll.Position = UDim2.new(0, 563, 0, 339)
-    ResizeAll.Size = UDim2.new(0, 22, 0, 22)
-    ResizeAll.FontFace = GetFont()
-    ResizeAll.Text = ""
-    ResizeAll.TextColor3 = Color3.fromRGB(0, 0, 0)
-    ResizeAll.TextSize = 14.000
-    ResizeAll.ZIndex = 2
-
-    ResizeAllIcon.Name = "ResizeAllIcon"
-    ResizeAllIcon.Parent = ResizeAll
-    ResizeAllIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-    ResizeAllIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ResizeAllIcon.BackgroundTransparency = 1.000
-    ResizeAll.Position = UDim2.new(0.5, 0, 0.5, 0)
-    ResizeAllIcon.Size = UDim2.new(1.06818187, 0, 1, 0)
-    ResizeAllIcon.ZIndex = -1
-    ResizeAllIcon.Image = "rbxassetid://13034819689"
-
-    WindowElementContainer.Name = "WindowElementContainer"
-    WindowElementContainer.Parent = Window
-    WindowElementContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    WindowElementContainer.BackgroundTransparency = 1.000
-    WindowElementContainer.Size = UDim2.new(1, 0, 1, 0)
-
-    WindowElements.Name = "WindowElements"
-    WindowElements.Parent = WindowElementContainer
-    WindowElements.Active = true
-    WindowElements.AnchorPoint = Vector2.new(0.5, 0.5)
-    WindowElements.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    WindowElements.BackgroundTransparency = 1.000
-    WindowElements.BorderSizePixel = 0
-    WindowElements.Position = UDim2.new(0.5, 0, 0.555, 0)
-    WindowElements.Size = UDim2.new(1, -5, 0.9, 0)
-    WindowElements.CanvasSize = UDim2.new(0, 0, 0, 0)
-    WindowElements.ScrollBarThickness = 8
-    WindowElements.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
-
-    WindowElementsLayout.Name = "WindowElementsLayout"
-    WindowElementsLayout.Parent = WindowElements
-    WindowElementsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    WindowElementsLayout.Padding = UDim.new(0, 8)
-
-    WindowElementsPadding.Name = "WindowElementsPadding"
-    WindowElementsPadding.Parent = WindowElements
-    WindowElementsPadding.PaddingBottom = UDim.new(0, 15)
-    WindowElementsPadding.PaddingLeft = UDim.new(0, 7)
-    WindowElementsPadding.PaddingRight = UDim.new(0, 20)
-    WindowElementsPadding.PaddingTop = UDim.new(0, 10)
-
-    WindowElementsContainerLayout.Name = "WindowElementsContainerLayout"
-    WindowElementsContainerLayout.Parent = WindowElementContainer
-    WindowElementsContainerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-    AWindowSep.Name = "AWindowSep"
-    AWindowSep.Parent = WindowElementContainer
-    AWindowSep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    AWindowSep.BackgroundTransparency = 1.000
-    AWindowSep.Position = UDim2.new(0.00609756075, 0, 0, 0)
-    AWindowSep.Size = UDim2.new(0, 567, 0, 30)
-
+local ImGui = Instance.new("ScreenGui")
+local Window = Instance.new("Frame")
+local WindowCorner = Instance.new("UICorner")
+local WindowStroke = Instance.new("UIStroke")
+local WindowPanel = Instance.new("Frame")
+local WindowPanelIcon = Instance.new("ImageLabel")
+local MinimiseButton = Instance.new("TextButton")
+local MinimiseButtonIcon = Instance.new("ImageLabel")
+local WindowPanelIconPadding = Instance.new("UIPadding")
+local WindowDisplayName = Instance.new("TextLabel")
+local WindowDisplayNamePadding = Instance.new("UIPadding")
+local ResizeAll = Instance.new("TextButton")
+local ResizeAllIcon = Instance.new("ImageLabel")
+local WindowElementContainer = Instance.new("Frame")
+local WindowElements = Instance.new("ScrollingFrame")
+local WindowElementsLayout = Instance.new("UIListLayout")
+local WindowElementsPadding = Instance.new("UIPadding")
+local WindowElementsContainerLayout = Instance.new("UIListLayout")
+local AWindowSep = Instance.new("Frame")
 local BackgroundContainer = Instance.new("Frame")
+local GradientBG = Instance.new("Frame")
+
+ImGui.Name = string.format("ImGui-%s", tostring(util:egg(tostring(game:GetService("Players").LocalPlayer.UserId))))
+ImGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ImGui.ResetOnSpawn = false
+SecureGui(ImGui)
+
+Window.Name = "Window"
+Window.Parent = ImGui
+Window.Active = true
+Window.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+Window.BackgroundTransparency = 0.1
+Window.ClipsDescendants = true
+Window.Position = UDim2.new(0.283211678, 0, 0.155285195, 0)
+Window.Selectable = true
+Window.Size = UDim2.new(0, MenuOptions.Width, 0, MenuOptions.Height)
+
+WindowCorner.CornerRadius = UDim.new(0, 12)
+WindowCorner.Name = "WindowCorner"
+WindowCorner.Parent = Window
+
+WindowStroke.Name = "WindowStroke"
+WindowStroke.Parent = Window
+WindowStroke.Color = Color3.fromRGB(80, 80, 100)
+WindowStroke.Thickness = 1.5
+WindowStroke.Transparency = 0.5
+
+WindowPanel.Name = "WindowPanel"
+WindowPanel.Parent = Window
+WindowPanel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+WindowPanel.BackgroundTransparency = 1.000
+WindowPanel.Size = UDim2.new(1, 0, 0, 30)
+WindowPanel.ZIndex = 2
+
+WindowPanelIcon.Name = "WindowPanelIcon"
+WindowPanelIcon.Parent = WindowPanel
+WindowPanelIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+WindowPanelIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+WindowPanelIcon.BackgroundTransparency = 1.000
+WindowPanelIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+WindowPanelIcon.Size = UDim2.new(0.999999881, 0, 1, 0)
+WindowPanelIcon.ZIndex = 2
+WindowPanelIcon.Image = "rbxassetid://13034670565"
+WindowPanelIcon.ScaleType = Enum.ScaleType.Tile
+WindowPanelIcon.ImageTransparency = 0.85
+
+MinimiseButton.Name = "MinimiseButton"
+MinimiseButton.Parent = WindowPanelIcon
+MinimiseButton.AnchorPoint = Vector2.new(0.5, 0.5)
+MinimiseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinimiseButton.BackgroundTransparency = 1.000
+MinimiseButton.Position = UDim2.new(0, 13, 0.5, 0)
+MinimiseButton.Size = UDim2.new(0.0452961661, 0, 1, 0)
+MinimiseButton.FontFace = GetFont()
+MinimiseButton.Text = ""
+MinimiseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+MinimiseButton.TextSize = 14.000
+
+MinimiseButtonIcon.Name = "MinimiseButtonIcon"
+MinimiseButtonIcon.Parent = MinimiseButton
+MinimiseButtonIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+MinimiseButtonIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinimiseButtonIcon.BackgroundTransparency = 1.000
+MinimiseButtonIcon.Position = UDim2.new(0.5, 0, 0.5, 2)
+MinimiseButtonIcon.Size = UDim2.new(0, 12, 0, 12)
+MinimiseButtonIcon.Image = "rbxassetid://13034875812"
+
+WindowPanelIconPadding.Name = "WindowPanelIconPadding"
+WindowPanelIconPadding.Parent = WindowPanelIcon
+WindowPanelIconPadding.PaddingLeft = UDim.new(0, 2)
+
+WindowDisplayName.Name = "WindowDisplayName"
+WindowDisplayName.Parent = WindowPanelIcon
+WindowDisplayName.AnchorPoint = Vector2.new(0.5, 0.5)
+WindowDisplayName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+WindowDisplayName.BackgroundTransparency = 1.000
+WindowDisplayName.Position = UDim2.new(0.5, 0, 0.5, 0)
+WindowDisplayName.Size = UDim2.new(1, 0, 1, 0)
+WindowDisplayName.FontFace = GetFont()
+WindowDisplayName.Text = PROPS.Name
+WindowDisplayName.TextColor3 = Color3.fromRGB(240, 240, 245)
+WindowDisplayName.TextSize = 16.000
+WindowDisplayName.TextXAlignment = Enum.TextXAlignment.Left
+
+WindowDisplayNamePadding.Name = "WindowDisplayNamePadding"
+WindowDisplayNamePadding.Parent = WindowDisplayName
+WindowDisplayNamePadding.PaddingLeft = UDim.new(0, 30)
+
+ResizeAll.Name = "ResizeAll"
+ResizeAll.Parent = Window
+ResizeAll.AnchorPoint = Vector2.new(0.5, 0.5)
+ResizeAll.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ResizeAll.BackgroundTransparency = 1.000
+ResizeAll.BorderSizePixel = 0
+ResizeAll.Position = UDim2.new(0, 563, 0, 339)
+ResizeAll.Size = UDim2.new(0, 22, 0, 22)
+ResizeAll.FontFace = GetFont()
+ResizeAll.Text = ""
+ResizeAll.TextColor3 = Color3.fromRGB(0, 0, 0)
+ResizeAll.TextSize = 14.000
+ResizeAll.ZIndex = 2
+
+ResizeAllIcon.Name = "ResizeAllIcon"
+ResizeAllIcon.Parent = ResizeAll
+ResizeAllIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+ResizeAllIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ResizeAllIcon.BackgroundTransparency = 1.000
+ResizeAllIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+ResizeAllIcon.Size = UDim2.new(1.06818187, 0, 1, 0)
+ResizeAllIcon.ZIndex = -1
+ResizeAllIcon.Image = "rbxassetid://13034819689"
+
+WindowElementContainer.Name = "WindowElementContainer"
+WindowElementContainer.Parent = Window
+WindowElementContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+WindowElementContainer.BackgroundTransparency = 1.000
+WindowElementContainer.Size = UDim2.new(1, 0, 1, 0)
+
+WindowElements.Name = "WindowElements"
+WindowElements.Parent = WindowElementContainer
+WindowElements.Active = true
+WindowElements.AnchorPoint = Vector2.new(0.5, 0.5)
+WindowElements.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+WindowElements.BackgroundTransparency = 1.000
+WindowElements.BorderSizePixel = 0
+WindowElements.Position = UDim2.new(0.5, 0, 0.555, 0)
+WindowElements.Size = UDim2.new(1, -5, 0.9, 0)
+WindowElements.CanvasSize = UDim2.new(0, 0, 0, 0)
+WindowElements.ScrollBarThickness = 8
+WindowElements.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
+
+WindowElementsLayout.Name = "WindowElementsLayout"
+WindowElementsLayout.Parent = WindowElements
+WindowElementsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+WindowElementsLayout.Padding = UDim.new(0, 8)
+
+WindowElementsPadding.Name = "WindowElementsPadding"
+WindowElementsPadding.Parent = WindowElements
+WindowElementsPadding.PaddingBottom = UDim.new(0, 15)
+WindowElementsPadding.PaddingLeft = UDim.new(0, 7)
+WindowElementsPadding.PaddingRight = UDim.new(0, 20)
+WindowElementsPadding.PaddingTop = UDim.new(0, 10)
+
+WindowElementsContainerLayout.Name = "WindowElementsContainerLayout"
+WindowElementsContainerLayout.Parent = WindowElementContainer
+WindowElementsContainerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+AWindowSep.Name = "AWindowSep"
+AWindowSep.Parent = WindowElementContainer
+AWindowSep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+AWindowSep.BackgroundTransparency = 1.000
+AWindowSep.Position = UDim2.new(0.00609756075, 0, 0, 0)
+AWindowSep.Size = UDim2.new(0, 567, 0, 30)
+
 BackgroundContainer.Name = "BackgroundContainer"
 BackgroundContainer.Parent = Window
 BackgroundContainer.BackgroundTransparency = 1
@@ -291,7 +302,6 @@ BackgroundContainer.Size = UDim2.new(1, 0, 1, 0)
 BackgroundContainer.ZIndex = -10
 BackgroundContainer.ClipsDescendants = true
 
-local GradientBG = Instance.new("Frame")
 GradientBG.Parent = BackgroundContainer
 GradientBG.Size = UDim2.new(1, 0, 1, 0)
 GradientBG.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
@@ -316,13 +326,13 @@ for i = 1, nodeCount do
     }
 end
 
-local timeVar = 0
 RunService.RenderStepped:Connect(function(dt)
-    timeVar = timeVar + dt
     local w, h = BackgroundContainer.AbsoluteSize.X, BackgroundContainer.AbsoluteSize.Y
-    
-    for _, l in ipairs(lineCache) do l.Visible = false end
     activeLines = 0
+    
+    for _, l in ipairs(lineCache) do 
+        l.Visible = false 
+    end
     
     for i, node in ipairs(nodes) do
         node.pos = node.pos + node.vel
@@ -343,13 +353,10 @@ RunService.RenderStepped:Connect(function(dt)
                 
                 local p1 = Vector2.new(node.pos.X * w, node.pos.Y * h)
                 local p2 = Vector2.new(other.pos.X * w, other.pos.Y * h)
-                local center = (p1 + p2) / 2
-                local mag = (p1 - p2).Magnitude
-                local rot = math.atan2(p2.Y - p1.Y, p2.X - p1.X)
                 
-                line.Size = UDim2.new(0, mag, 0, 1)
-                line.Position = UDim2.new(0, center.X, 0, center.Y)
-                line.Rotation = math.deg(rot)
+                line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1)
+                line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
+                line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
             end
         end
     end
