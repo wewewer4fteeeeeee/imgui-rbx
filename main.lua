@@ -264,6 +264,10 @@ BackgroundContainer.Size = UDim2.new(1, 0, 1, 0)
 BackgroundContainer.ZIndex = -10
 BackgroundContainer.ClipsDescendants = true
 
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0, 8)
+bgCorner.Parent = BackgroundContainer
+
 local nodeCount = 60 
 local nodeSize = 4   
 local nodes = {}
@@ -313,7 +317,11 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 RunService.RenderStepped:Connect(function()
-    if not Window or not Window:IsDescendantOf(game) or not Window.Visible then return end
+    if not Window or not Window:IsDescendantOf(game) or not Window.Visible then 
+        BackgroundContainer.Visible = false
+        return 
+    end
+    BackgroundContainer.Visible = true
     
     local size = BackgroundContainer.AbsoluteSize
     local mousePos = UserInputService:GetMouseLocation()
