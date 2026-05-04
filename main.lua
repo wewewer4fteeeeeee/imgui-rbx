@@ -256,112 +256,98 @@ function main:Begin(PROPS)
 
 -- skiddie diddy 
 local BackgroundContainer = Instance.new("Frame")
-    BackgroundContainer.Name = "BackgroundContainer"
-    BackgroundContainer.Parent = Window
-    BackgroundContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    BackgroundContainer.BackgroundTransparency = 0.2
-    BackgroundContainer.Size = UDim2.new(1, 0, 1, 0)
-    BackgroundContainer.ZIndex = -10
-    BackgroundContainer.ClipsDescendants = true
+BackgroundContainer.Name = "BackgroundContainer"
+BackgroundContainer.Parent = Window
+BackgroundContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+BackgroundContainer.BackgroundTransparency = 0.2
+BackgroundContainer.Size = UDim2.new(1, 0, 1, 0)
+BackgroundContainer.ZIndex = -10
+BackgroundContainer.ClipsDescendants = true
 
-    local nodeCount = 50
-    local lineMaxDist = 0.12
-    local nodeSpeed = 0.0006
-    local nodes = {}
-    local lineCache = {}
-    local activeLines = 0
+local nodeCount = 60 
+local nodeSize = 4   
+local nodes = {}
+local lineCache = {}
+local activeLines = 0
 
-    local function getLine(container)
-        activeLines = activeLines + 1
-        if lineCache[activeLines] then
-            lineCache[activeLines].Visible = true
-            return lineCache[activeLines]
-        end
-
-        local line = Instance.new("Frame")
-        line.Name = "ConnectionLine"
-        line.BorderSizePixel = 0
-        line.BackgroundColor3 = Color3.new(1, 1, 1)
-        line.AnchorPoint = Vector2.new(0.5, 0.5)
-        line.ZIndex = -9
-        line.Parent = container
-        table.insert(lineCache, line)
-        return line
+local function getLine(container)
+    activeLines = activeLines + 1
+    if lineCache[activeLines] then
+        lineCache[activeLines].Visible = true
+        return lineCache[activeLines]
     end
 
-    for i = 1, nodeCount do
-        local node = Instance.new("Frame")
-        node.Size = UDim2.new(0, 2, 0, 2)
-        node.BackgroundColor3 = Color3.new(1, 1, 1)
-        node.BackgroundTransparency = 0.1
-        node.BorderSizePixel = 0
-        node.Parent = BackgroundContainer
+    local line = Instance.new("Frame")
+    line.Name = "ConnectionLine"
+    line.BorderSizePixel = 0
+    line.BackgroundColor3 = Color3.fromRGB(130, 50, 255)
+    line.AnchorPoint = Vector2.new(0.5, 0.5)
+    line.ZIndex = -9
+    line.Parent = container
+    table.insert(lineCache, line)
+    return line
+end
+
+for i = 1, nodeCount do
+    local node = Instance.new("Frame")
+    node.Size = UDim2.new(0, nodeSize, 0, nodeSize)
+    node.BackgroundColor3 = Color3.new(1, 1, 1)
+    node.BackgroundTransparency = 0.4 
+    node.BorderSizePixel = 0
+    node.Parent = BackgroundContainer
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = node
+
+    local randomPos = Vector2.new(math.random(), math.random())
+    node.Position = UDim2.new(randomPos.X, 0, randomPos.Y, 0)
+
+    nodes[i] = {
+        frame = node,
+        pos = randomPos
+    }
+end
+
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+RunService.RenderStepped:Connect(function()
+    if not Window or not Window:IsDescendantOf(game) or not Window.Visible then return end
+    
+    local size = BackgroundContainer.AbsoluteSize
+    local mousePos = UserInputService:GetMouseLocation()
+    local windowPos = Window.AbsolutePosition
+    
+    local mX = (mousePos.X - windowPos.X) / size.X
+    local mY = (mousePos.Y - (windowPos.Y + 36)) / size.Y 
+    local mouseVec = Vector2.new(mX, mY)
+
+    activeLines = 0
+    for _, l in ipairs(lineCache) do l.Visible = false end
+
+    for i, n1 in ipairs(nodes) do
+        local mDist = (n1.pos - mouseVec).Magnitude
         
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(1, 0)
-        corner.Parent = node
-
-        nodes[i] = {
-            frame = node,
-            pos = Vector2.new(math.random(), math.random()),
-            vel = Vector2.new(math.random(-10, 10) * nodeSpeed, math.random(-10, 10) * nodeSpeed)
-        }
-    end
-
-    local UserInputService = game:GetService("UserInputService")
-    local RunService = game:GetService("RunService")
-
-    RunService.RenderStepped:Connect(function()
-        if not Window or not Window:IsDescendantOf(game) or not Window.Visible then return end
-        
-        local size = BackgroundContainer.AbsoluteSize
-        local mousePos = UserInputService:GetMouseLocation()
-        local windowPos = Window.AbsolutePosition
-        
-        local mX = (mousePos.X - windowPos.X) / size.X
-        local mY = (mousePos.Y - (windowPos.Y + 36)) / size.Y 
-        local mouseVec = Vector2.new(mX, mY)
-
-        activeLines = 0
-        for _, l in ipairs(lineCache) do l.Visible = false end
-
-        for i, n1 in ipairs(nodes) do
-            n1.pos = n1.pos + n1.vel
-            if n1.pos.X < 0 or n1.pos.X > 1 then n1.vel = Vector2.new(-n1.vel.X, n1.vel.Y) end
-            if n1.pos.Y < 0 or n1.pos.Y > 1 then n1.vel = Vector2.new(n1.vel.X, -n1.vel.Y) end
+        if mDist < 0.22 then
+            local line = getLine(BackgroundContainer)
+            local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
+            local p2 = Vector2.new(mouseVec.X * size.X, mouseVec.Y * size.Y)
             
-            n1.frame.Position = UDim2.new(n1.pos.X, 0, n1.pos.Y, 0)
-
-            local mDist = (n1.pos - mouseVec).Magnitude
-            if mDist < 0.25 then
-                local line = getLine(BackgroundContainer)
-                local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
-                local p2 = Vector2.new(mouseVec.X * size.X, mouseVec.Y * size.Y)
-                
-                line.BackgroundColor3 = Color3.fromRGB(130, 50, 255)
-                line.BackgroundTransparency = 0.3 + (mDist / 0.25) * 0.7
-                line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1.5)
-                line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
-                line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
-            end
-
-            for j = i + 1, #nodes do
-                local n2 = nodes[j]
-                local dist = (n1.pos - n2.pos).Magnitude
-                if dist < lineMaxDist then
-                    local line = getLine(BackgroundContainer)
-                    local p1 = Vector2.new(n1.pos.X * size.X, n1.pos.Y * size.Y)
-                    local p2 = Vector2.new(n2.pos.X * size.X, n2.pos.Y * size.Y)
-                    
-                    line.BackgroundColor3 = Color3.new(1, 1, 1)
-                    line.BackgroundTransparency = 0.7 + (dist / lineMaxDist) * 0.3
-                    line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1)
-                    line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
-                    line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
-                end
-            end
+            line.BackgroundColor3 = Color3.fromRGB(130, 50, 255)
+            line.BackgroundTransparency = 0.2 + (mDist / 0.22) * 0.8
+            line.Size = UDim2.new(0, (p1 - p2).Magnitude, 0, 1.5)
+            line.Position = UDim2.new(0, (p1.X + p2.X) / 2, 0, (p1.Y + p2.Y) / 2)
+            line.Rotation = math.deg(math.atan2(p2.Y - p1.Y, p2.X - p1.X))
+            
+            n1.frame.BackgroundTransparency = 0
+            n1.frame.BackgroundColor3 = Color3.fromRGB(130, 50, 255)
+        else
+            n1.frame.BackgroundTransparency = 0.4
+            n1.frame.BackgroundColor3 = Color3.new(1, 1, 1)
         end
-    end)
+    end
+end)
 
     
     local ElementHandler = {}
