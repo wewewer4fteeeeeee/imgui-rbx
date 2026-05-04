@@ -482,6 +482,67 @@ end)
         return OnClick
     end
 
+
+
+function ElementHandler:soundyoo(config)
+    local haysound = config.haysound or ""
+    local asset = soundsupportyippie(haysound)
+    
+    local sound_element = Instance.new("Frame")
+    local play_btn = Instance.new("TextButton")
+    local stop_btn = Instance.new("TextButton")
+    local sound_obj = Instance.new("Sound")
+    local sound_corner = Instance.new("UICorner")
+    local stop_corner = Instance.new("UICorner")
+
+    sound_element.Name = "soundyoo_element"
+    sound_element.Parent = WindowElements -- Now it correctly sees this variable
+    sound_element.BackgroundTransparency = 1
+    sound_element.Size = UDim2.new(1, 0, 0, 40)
+
+    sound_obj.Name = "InternalSound"
+    sound_obj.SoundId = asset or ""
+    sound_obj.Parent = sound_element
+
+    play_btn.Name = "PlayButton"
+    play_btn.Parent = sound_element
+    play_btn.Size = UDim2.new(0, 80, 0, 30)
+    play_btn.Position = UDim2.new(0, 5, 0.5, 0)
+    play_btn.AnchorPoint = Vector2.new(0, 0.5)
+    play_btn.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
+    play_btn.FontFace = GetFont() -- Matches your InputText style
+    play_btn.Text = "Play"
+    play_btn.TextColor3 = Color3.fromRGB(240, 240, 250)
+    play_btn.TextSize = 16
+
+    sound_corner.CornerRadius = UDim.new(0, 6)
+    sound_corner.Parent = play_btn
+
+    stop_btn.Name = "StopButton"
+    stop_btn.Parent = sound_element
+    stop_btn.Size = UDim2.new(0, 80, 0, 30)
+    stop_btn.Position = UDim2.new(0, 92, 0.5, 0)
+    stop_btn.AnchorPoint = Vector2.new(0, 0.5)
+    stop_btn.BackgroundColor3 = Color3.fromRGB(100, 40, 40)
+    stop_btn.FontFace = GetFont()
+    stop_btn.Text = "Stop"
+    stop_btn.TextColor3 = Color3.fromRGB(240, 240, 250)
+    stop_btn.TextSize = 16
+
+    stop_corner.CornerRadius = UDim.new(0, 6)
+    stop_corner.Parent = stop_btn
+
+    play_btn.MouseButton1Click:Connect(function()
+        sound_obj:Play()
+    end)
+
+    stop_btn.MouseButton1Click:Connect(function()
+        sound_obj:Stop()
+    end)
+
+    return sound_element
+end
+
     function ElementHandler:InputText(InputTextOptions) 
         local TextBox_Element = Instance.new("Frame")
         local TextBox_ElementName = Instance.new("TextLabel")
@@ -940,54 +1001,7 @@ end)
         end)
     end
 
-function Window:soundyoo(config)
-    local haysound = config.haysound or ""
-    local asset = soundsupportyippie(haysound)
-    
-    local sound_element = Instance.new("Frame")
-    local play_btn = Instance.new("TextButton")
-    local stop_btn = Instance.new("TextButton")
-    local sound_obj = Instance.new("Sound")
 
-    sound_element.Name = "soundyoo_element"
-    sound_element.Parent = WindowElements
-    sound_element.BackgroundTransparency = 1
-    sound_element.Size = UDim2.new(1, 0, 0, 40)
-
-    -- Sound object needs to be where it can play
-    sound_obj.SoundId = asset or ""
-    sound_obj.Parent = game:GetService("SoundService") 
-
-    play_btn.Parent = sound_element
-    play_btn.Size = UDim2.new(0, 80, 0, 30)
-    play_btn.Position = UDim2.new(0, 5, 0.5, 0)
-    play_btn.AnchorPoint = Vector2.new(0, 0.5)
-    play_btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    play_btn.Text = "Play"
-    play_btn.TextColor3 = Color3.new(1, 1, 1)
-    play_btn.Font = Enum.Font.Code
-    play_btn.BorderSizePixel = 0
-
-    stop_btn.Parent = sound_element
-    stop_btn.Size = UDim2.new(0, 80, 0, 30)
-    stop_btn.Position = UDim2.new(0, 90, 0.5, 0)
-    stop_btn.AnchorPoint = Vector2.new(0, 0.5)
-    stop_btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    stop_btn.Text = "Stop"
-    stop_btn.TextColor3 = Color3.new(1, 1, 1)
-    stop_btn.Font = Enum.Font.Code
-    stop_btn.BorderSizePixel = 0
-
-    play_btn.MouseButton1Click:Connect(function() 
-        sound_obj:Play() 
-    end)
-    
-    stop_btn.MouseButton1Click:Connect(function() 
-        sound_obj:Stop() 
-    end)
-
-    return sound_element
-end
 
 function Window:Button(config)
     local name = config.Name or "Button"
