@@ -14,6 +14,8 @@ function util:egg(stringx)
 end
 
 local main = {}
+local TweenService = game:GetService("TweenService")
+
 
 function main:Begin(PROPS) 
     if not PROPS then 
