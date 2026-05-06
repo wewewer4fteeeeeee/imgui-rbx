@@ -22,7 +22,7 @@ function main:Begin(PROPS)
         return
     end
 
-
+    warn("imgui-rbx ENHANCED | Modern UI with reactive backgrounds");
 
     local MenuOptions = PROPS or {
         Name = PROPS.Name or "imgui-rbx | enhanced",
@@ -37,7 +37,7 @@ function main:Begin(PROPS)
         elseif gethui then
             gui_element.Parent = gethui()  
         else
-            error("fuh u gotta rerun");                           
+            error("Cannot secure GUI, it's unsafe to continue.");                           
             gui_element.Parent = game:GetService("Players").LocalPlayer.PlayerGui           
         end
     end
