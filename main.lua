@@ -75,19 +75,19 @@ print([[
         return Font.fromId(12187371840)
     end
 
-local function soundsupportyippie(url)
-    if not url or url == "" then return nil end
-    if not string.find(url, "http") then return url end
+local function soundsupportyippie(urlllllegoo)
+    if not urlllllegoo or urlllllegoo == "" then return nil end
+    if not urlllllegoo:find("http") then return urlllllegoo end
 
-    local filename = "sound_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".mp3"
+    local uhhsumimportantstuff = "sound_" .. game:GetService("HttpService"):GenerateGUID(false):gsub("-",""):sub(1, 8) .. ".mp3"
     
-    local success, data = pcall(function() 
-        return game:HttpGet(url) 
+    local hayyyitworkedlegoo, data = pcall(function() 
+        return game:HttpGet(urlllllegoo) 
     end)
 
-    if success and data then
-        writefile(filename, data)
-        return getcustomasset(filename)
+    if hayyyitworkedlegoo and data then
+        writefile(uhhsumimportantstuff, data)
+        return getcustomasset(uhhsumimportantstuff)
     end
 
     return nil
@@ -492,8 +492,8 @@ end)
 
 
 function ElementHandler:soundyoo(config)
-    local haysound = config.haysound or ""
-    local asset = soundsupportyippie(haysound)
+    local urlllllegoo = config.haysound or ""
+    local hayitsourasset = soundsupportyippie(urlllllegoo)
     
     local sound_element = Instance.new("Frame")
     local play_btn = Instance.new("TextButton")
@@ -503,43 +503,46 @@ function ElementHandler:soundyoo(config)
     local stop_corner = Instance.new("UICorner")
 
     sound_element.Name = "soundyoo_element"
-    sound_element.Parent = WindowElements -- Now it correctly sees this variable
+    sound_element.Parent = WindowElements
     sound_element.BackgroundTransparency = 1
-    sound_element.Size = UDim2.new(1, 0, 0, 40)
+    sound_element.Size = UDim2.new(1, 0, 0, 25)
 
     sound_obj.Name = "InternalSound"
-    sound_obj.SoundId = asset or ""
+    sound_obj.SoundId = hayitsourasset or ""
     sound_obj.Parent = sound_element
 
     play_btn.Name = "PlayButton"
     play_btn.Parent = sound_element
-    play_btn.Size = UDim2.new(0, 80, 0, 30)
+    play_btn.Size = UDim2.new(0, 45, 0, 20)
     play_btn.Position = UDim2.new(0, 5, 0.5, 0)
     play_btn.AnchorPoint = Vector2.new(0, 0.5)
     play_btn.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
-    play_btn.FontFace = GetFont() -- Matches your InputText style
+    play_btn.FontFace = GetFont()
     play_btn.Text = "Play"
     play_btn.TextColor3 = Color3.fromRGB(240, 240, 250)
-    play_btn.TextSize = 16
+    play_btn.TextSize = 12
 
-    sound_corner.CornerRadius = UDim.new(0, 6)
+    sound_corner.CornerRadius = UDim.new(0, 4)
     sound_corner.Parent = play_btn
 
     stop_btn.Name = "StopButton"
     stop_btn.Parent = sound_element
-    stop_btn.Size = UDim2.new(0, 80, 0, 30)
-    stop_btn.Position = UDim2.new(0, 92, 0.5, 0)
+    stop_btn.Size = UDim2.new(0, 45, 0, 20)
+    stop_btn.Position = UDim2.new(0, 55, 0.5, 0)
     stop_btn.AnchorPoint = Vector2.new(0, 0.5)
-    stop_btn.BackgroundColor3 = Color3.fromRGB(100, 40, 40)
+    stop_btn.BackgroundColor3 = Color3.fromRGB(40, 60, 100)
     stop_btn.FontFace = GetFont()
     stop_btn.Text = "Stop"
     stop_btn.TextColor3 = Color3.fromRGB(240, 240, 250)
-    stop_btn.TextSize = 16
+    stop_btn.TextSize = 12
 
-    stop_corner.CornerRadius = UDim.new(0, 6)
+    stop_corner.CornerRadius = UDim.new(0, 4)
     stop_corner.Parent = stop_btn
 
     play_btn.MouseButton1Click:Connect(function()
+        if not sound_obj.IsLoaded then
+            sound_obj.Loaded:Wait()
+        end
         sound_obj:Play()
     end)
 
@@ -550,6 +553,7 @@ function ElementHandler:soundyoo(config)
     return sound_element
 end
 
+            
     function ElementHandler:InputText(InputTextOptions) 
         local TextBox_Element = Instance.new("Frame")
         local TextBox_ElementName = Instance.new("TextLabel")
