@@ -16,6 +16,8 @@ end
 local main = {}
 local TweenService = game:GetService("TweenService")
 
+local main = {}
+local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local SetClipboard = setclipboard or print
 local BaseUrl = "https://peace-gives-temporarily-hostels.trycloudflare.com"
@@ -27,25 +29,28 @@ function main:Begin(PROPS)
 
     local function IsWhitelisted()
         local success, result = pcall(function()
-            return HttpService:GetAsync(BaseUrl .. "/check/" .. HWID)
+            return HttpService:GetAsync(BaseUrl .. "/check/" .. HttpService:UrlEncode(HWID))
         end)
+        
         if success then
+            print("Server Response: " .. tostring(result)) -- CHECK THIS IN F9 CONSOLE
             local data = HttpService:JSONDecode(result)
-            return data.status == "success"
+            if data and data.status == "success" then
+                return true
+            end
+        else
+            warn("Failed to connect to whitelist server: " .. tostring(result))
         end
         return false
     end
 
     if not IsWhitelisted() then
-        local originalName = PROPS.Name
         PROPS.Name = "bud u needa join discord"
-        
         local Handler = main:Internal_Build(PROPS) 
         
-        Handler:Text("Join discord yees")
-        Handler:Button("whitelist thing for discord"):Connect(function() SetClipboard(HWID) end)
-        Handler:Button("discord (copyed)"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
-        
+        Handler:Text("Join discord to whitelist")
+        Handler:Button("Copy ID"):Connect(function() SetClipboard(HWID) end)
+        Handler:Button("Join Discord"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
         return
     end
 
