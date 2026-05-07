@@ -16,8 +16,43 @@ end
 local main = {}
 local TweenService = game:GetService("TweenService")
 
+local HttpService = game:GetService("HttpService")
+local SetClipboard = setclipboard or print
+local BaseUrl = "https://peace-gives-temporarily-hostels.trycloudflare.com"
 
 function main:Begin(PROPS) 
+    if not PROPS then return end
+
+    local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
+
+    local function IsWhitelisted()
+        local success, result = pcall(function()
+            return HttpService:GetAsync(BaseUrl .. "/check/" .. HWID)
+        end)
+        if success then
+            local data = HttpService:JSONDecode(result)
+            return data.status == "success"
+        end
+        return false
+    end
+
+    if not IsWhitelisted() then
+        local originalName = PROPS.Name
+        PROPS.Name = "bud u needa join discord"
+        
+        local Handler = main:Internal_Build(PROPS) 
+        
+        Handler:Text("Join discord yees")
+        Handler:Button("whitelist thing for discord"):Connect(function() SetClipboard(HWID) end)
+        Handler:Button("discord (copyed)"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
+        
+        return
+    end
+
+    return main:Internal_Build(PROPS)
+end
+
+function main:Internal_Build(PROPS) 
     if not PROPS then 
         return
     end
