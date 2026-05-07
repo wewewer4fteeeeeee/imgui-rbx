@@ -28,30 +28,28 @@ function main:Begin(PROPS)
     local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
 
     local function IsWhitelisted()
+        local encodedID = HttpService:UrlEncode(HWID)
         local success, result = pcall(function()
-            return HttpService:GetAsync(BaseUrl .. "/check/" .. HttpService:UrlEncode(HWID))
+            return HttpService:GetAsync(BaseUrl .. "/check/" .. encodedID)
         end)
         
         if success then
-            print("Server Response: " .. tostring(result)) -- CHECK THIS IN F9 CONSOLE
             local data = HttpService:JSONDecode(result)
-            if data and data.status == "success" then
-                return true
-            end
-        else
-            warn("Failed to connect to whitelist server: " .. tostring(result))
+            return (data and data.status == "success")
         end
         return false
     end
 
     if not IsWhitelisted() then
-        PROPS.Name = "bud u needa join discord"
+        PROPS.Name = "Join tha discord"
         local Handler = main:Internal_Build(PROPS) 
         
-        Handler:Text("Join discord to whitelist")
-        Handler:Button("Copy ID"):Connect(function() SetClipboard(HWID) end)
-        Handler:Button("Join Discord"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
-        return
+        Handler:Text("Join discord fr unc")
+        Handler:Button("Copy idih"):Connect(function() SetClipboard(HWID) end)
+        Handler:Button("Join discord"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
+        
+
+        return Handler 
     end
 
     return main:Internal_Build(PROPS)
