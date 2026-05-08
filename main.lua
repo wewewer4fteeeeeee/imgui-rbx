@@ -26,31 +26,18 @@ function main:Begin(PROPS)
     local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
 
     local function IsWhitelisted()
-        print("=== WHITELIST CHECK ===")
-        print("HWID: " .. tostring(HWID))
-        print("Checking: " .. BaseUrl .. "/check/" .. HWID)
-        
         local success, result = pcall(function()
             return game:HttpGet(BaseUrl .. "/check/" .. HWID)
         end)
-        
-        print("Request success: " .. tostring(success))
-        print("Raw result: " .. tostring(result))
-        
         if success then
             local data = HttpService:JSONDecode(result)
-            print("Decoded status: " .. tostring(data.status))
             local isWhitelisted = data.status == "success"
-            print("Is whitelisted: " .. tostring(isWhitelisted))
             return isWhitelisted
         end
-        
-        print("Request failed, returning false")
         return false
     end
 
     if not IsWhitelisted() then
-        print(">>> NOT WHITELISTED - SHOWING DISCORD UI <<<")
         local originalName = PROPS.Name
         PROPS.Name = "bud u needa join discord"
         
@@ -59,8 +46,6 @@ function main:Begin(PROPS)
         Handler:Text("Join discord yees")
         Handler:Button("whitelist thing for discord"):Connect(function() SetClipboard(HWID) end)
         Handler:Button("discord (copyed)"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
-        
-        -- Create a locked handler that blocks all methods
         local LockedHandler = {}
         local function DoNothing() return {Connect = function() end} end
         
