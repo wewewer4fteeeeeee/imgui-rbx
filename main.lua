@@ -46,7 +46,24 @@ function main:Begin(PROPS)
         Handler:Button("whitelist thing for discord"):Connect(function() SetClipboard(HWID) end)
         Handler:Button("discord (copyed)"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
         
-        return Handler
+        -- Create a locked handler that blocks all methods
+        local LockedHandler = {}
+        local function DoNothing() return {Connect = function() end} end
+        
+        LockedHandler.CheckBox = DoNothing
+        LockedHandler.Button = DoNothing
+        LockedHandler.Seperator = function() end
+        LockedHandler.Text = function() end
+        LockedHandler.Slider = DoNothing
+        LockedHandler.Dropdown = DoNothing
+        LockedHandler.TextBox = DoNothing
+        LockedHandler.ColorPicker = DoNothing
+        LockedHandler.KeyBind = DoNothing
+        LockedHandler.Toggle = DoNothing
+        LockedHandler.End = function() end
+        LockedHandler.imgyoo = function() end
+        
+        return LockedHandler
     end
 
     return main:Internal_Build(PROPS)
