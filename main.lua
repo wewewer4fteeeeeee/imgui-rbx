@@ -31,7 +31,7 @@ function main:Begin(PROPS)
         print("Checking: " .. BaseUrl .. "/check/" .. HWID)
         
         local success, result = pcall(function()
-            return HttpService:GetAsync(BaseUrl .. "/check/" .. HWID)
+            return game:HttpGet(BaseUrl .. "/check/" .. HWID)
         end)
         
         print("Request success: " .. tostring(success))
