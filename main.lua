@@ -26,17 +26,31 @@ function main:Begin(PROPS)
     local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
 
     local function IsWhitelisted()
+        print("=== WHITELIST CHECK ===")
+        print("HWID: " .. tostring(HWID))
+        print("Checking: " .. BaseUrl .. "/check/" .. HWID)
+        
         local success, result = pcall(function()
             return HttpService:GetAsync(BaseUrl .. "/check/" .. HWID)
         end)
+        
+        print("Request success: " .. tostring(success))
+        print("Raw result: " .. tostring(result))
+        
         if success then
             local data = HttpService:JSONDecode(result)
-            return data.status == "success"
+            print("Decoded status: " .. tostring(data.status))
+            local isWhitelisted = data.status == "success"
+            print("Is whitelisted: " .. tostring(isWhitelisted))
+            return isWhitelisted
         end
+        
+        print("Request failed, returning false")
         return false
     end
 
     if not IsWhitelisted() then
+        print(">>> NOT WHITELISTED - SHOWING DISCORD UI <<<")
         local originalName = PROPS.Name
         PROPS.Name = "bud u needa join discord"
         
@@ -66,6 +80,7 @@ function main:Begin(PROPS)
         return LockedHandler
     end
 
+    print(">>> WHITELISTED - LOADING FULL UI <<<")
     return main:Internal_Build(PROPS)
 end
 
