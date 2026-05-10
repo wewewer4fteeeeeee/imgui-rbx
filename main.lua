@@ -18,7 +18,7 @@ local TweenService = game:GetService("TweenService")
 
 local HttpService = game:GetService("HttpService")
 local SetClipboard = setclipboard or print
-local BaseUrl = "https://highways-invitations-concerning-shirt.trycloudflare.com"
+local BaseUrl = "https://ordinary-buffalo-postage-yang.trycloudflare.com"
 
 function main:Begin(PROPS) 
     if not PROPS then return end
