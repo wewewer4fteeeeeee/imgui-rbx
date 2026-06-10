@@ -8,7 +8,7 @@ function util:egg(stringx)
         for j = 1, math.random(5, 10) do
             egged = egged .. string.char(math.random(32, 126))
         end
-        output[#output+1] = string.format("%03d%s", charCode, egged)
+        output[#output+1] = string.format("%03d%s", charCode, egged)f
     end
     return table.concat(output)
 end
@@ -65,7 +65,7 @@ function main:Begin(PROPS)
         return LockedHandler
     end
 
-    print(">>> WHITELISTED - LOADING FULL UI <<<")
+    print("whitelisted :D thank yu!!!!")
     return main:Internal_Build(PROPS)
 end
 
