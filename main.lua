@@ -23,49 +23,6 @@ local BaseUrl = "https://cold-planets-smell.loca.lt"
 function main:Begin(PROPS) 
     if not PROPS then return end
 
-    local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
-
-    local function IsWhitelisted()
-        local success, result = pcall(function()
-            return game:HttpGet(BaseUrl .. "/check/" .. HWID)
-        end)
-        if success then
-            local data = HttpService:JSONDecode(result)
-            local isWhitelisted = data.status == "success"
-            return isWhitelisted
-        end
-        return false
-    end
-
-    if not IsWhitelisted() then
-        local originalName = PROPS.Name
-        PROPS.Name = "bud u needa join discord"
-        
-        local Handler = main:Internal_Build(PROPS) 
-        
-        Handler:Text("Join discord yees")
-        Handler:Button("whitelist thing for discord"):Connect(function() SetClipboard(HWID) end)
-        Handler:Button("discord (copyed)"):Connect(function() SetClipboard("https://discord.gg/GMCn58SEBb") end)
-        local LockedHandler = {}
-        local function DoNothing() return {Connect = function() end} end
-        
-        LockedHandler.CheckBox = DoNothing
-        LockedHandler.Button = DoNothing
-        LockedHandler.Seperator = function() end
-        LockedHandler.Text = function() end
-        LockedHandler.Slider = DoNothing
-        LockedHandler.Dropdown = DoNothing
-        LockedHandler.TextBox = DoNothing
-        LockedHandler.ColorPicker = DoNothing
-        LockedHandler.KeyBind = DoNothing
-        LockedHandler.Toggle = DoNothing
-        LockedHandler.End = function() end
-        LockedHandler.imgyoo = function() end
-        
-        return LockedHandler
-    end
-
-    print("whitelisted :D thank yu!!!!")
     return main:Internal_Build(PROPS)
 end
 
